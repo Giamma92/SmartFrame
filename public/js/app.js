@@ -534,13 +534,39 @@
       }
     }
 
-    // 8. Avvisi posizionati in ALTO A SINISTRA
+    // 8. Avvisi posizionati in ALTO A SINISTRA (con badge colorati e icone SVG)
     if (els.topLeftAlerts) {
       clear(els.topLeftAlerts);
       var alertsEnabled = !currentTheme || currentTheme.showAlerts !== false;
       if (alertsEnabled && ha.alerts && ha.alerts.length) {
         ha.alerts.forEach(function (a) {
-          var alertEl = el('div', 'ha-alert-item', (a.icon ? a.icon + ' ' : '') + a.text);
+          var alertEl = document.createElement('div');
+          var text = a.text || '';
+          var iconType = 'warning';
+          var category = 'warn';
+
+          if (/aria|finestr|ricambio/i.test(text)) {
+            iconType = 'wind';
+            category = 'air';
+          } else if (/pm2\.5|polveri/i.test(text)) {
+            iconType = 'pm25';
+            category = 'air';
+          } else if (/batteri/i.test(text)) {
+            iconType = 'warning';
+            category = 'danger';
+          } else if (/album|foto/i.test(text)) {
+            iconType = 'camera';
+            category = 'info';
+          } else if (/lavatrice|asciugatrice/i.test(text)) {
+            iconType = 'plug';
+            category = 'success';
+          }
+
+          alertEl.className = 'ha-alert-item ha-alert-item--' + category;
+          var iconHtml = window.SmartIcons ? window.SmartIcons.get(iconType) : '⚠️';
+          alertEl.innerHTML =
+            '<div class="ha-alert-badge ha-alert-badge--' + category + '">' + iconHtml + '</div>' +
+            '<div class="ha-alert-text">' + text + '</div>';
           els.topLeftAlerts.appendChild(alertEl);
         });
       }
