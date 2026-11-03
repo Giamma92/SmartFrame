@@ -179,6 +179,47 @@ app.get(['/birthday', '/birthday/'], (_req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'index.html'));
 });
 
+app.get(['/birthday/config', '/birthday/config/'], (_req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'config.html'));
+});
+
+app.get('/api/birthday/album-preview', async (req, res) => {
+  const url = String(req.query.url || '').trim();
+  if (!url) return res.json({ ok: true, title: '', photos: [] });
+  try {
+    const [title, gPhotos] = await Promise.all([
+      fetchAlbumTitle(url).catch(() => ''),
+      getBirthdayAlbumPhotos(url, true)
+    ]);
+    res.json({
+      ok: true,
+      title: title || '',
+      photos: gPhotos.map(p => ({ url: p.url, caption: p.caption || p.comment || '', date: p.date || '' }))
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/birthday', async (req, res) => {
+  try {
+    const body = req.body;
+    if (!body || typeof body !== 'object') {
+      return res.status(400).json({ ok: false, error: 'Dati non validi' });
+    }
+    const clean = { ...body };
+    delete clean._source;
+    delete clean.albumPhotos;
+    await fsp.mkdir(BIRTHDAY_DIR, { recursive: true });
+    await fsp.writeFile(path.join(BIRTHDAY_DIR, 'config.json'), JSON.stringify(clean, null, 2), 'utf8');
+    birthdayAlbumCache = { url: '', at: 0, photos: [] };
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[birthday] errore salvataggio config:', err.message);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.get('/api/birthday', async (req, res) => {
   for (const file of [path.join(BIRTHDAY_DIR, 'config.json'), path.join(ROOT_DIR, 'public', 'birthday', 'config.example.json')]) {
     try {
@@ -189,6 +230,10 @@ app.get('/api/birthday', async (req, res) => {
       if (albumUrl) {
         const gPhotos = await getBirthdayAlbumPhotos(albumUrl, req.query.refresh === '1');
         json.albumPhotos = gPhotos.map(p => ({ url: p.url, caption: p.caption || p.comment || '' }));
+
+        if (req.query.raw === '1') {
+          return res.set('Cache-Control', 'no-store').json(json);
+        }
 
         // Mappa in ordine: prime N foto al Quiz, le successive 6 al Memory
         const questions = json.quiz?.questions || [];

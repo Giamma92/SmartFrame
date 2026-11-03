@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12091c">
+  <meta name="robots" content="noindex">
+  <title>🎂 Configura Sorpresa – Pucla</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      --bg: #12091c;
+      --card: #1d112b;
+      --card-border: rgba(255, 95, 162, 0.22);
+      --input: #29183d;
+      --pink: #ff5fa2;
+      --purple: #8b5cf6;
+      --yellow: #ffd23f;
+      --mint: #3ddc97;
+      --text: #f8f2fc;
+      --muted: #b7a3c9;
+      --danger: #ff5c77;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      padding: 0 0 110px;
+      font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at top, #2a1342 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(18, 9, 28, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .brand span {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      display: block;
+    }
+    .quick-links {
+      display: flex;
+      gap: 8px;
+    }
+    .pill-link {
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill-link.primary {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      border: none;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .section h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: var(--yellow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section p.desc {
+      margin: -4px 0 14px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 520px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    label.field:last-child { margin-bottom: 0; }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="datetime-local"],
+    textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.98rem;
+      color: var(--text);
+      background: var(--input);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 11px 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255, 95, 162, 0.22);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 76px;
+    }
+
+    .row-input {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.92rem;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 15px;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .btn.danger {
+      background: rgba(255, 92, 119, 0.16);
+      color: var(--danger);
+      border: 1px solid rgba(255, 92, 119, 0.35);
+      padding: 6px 11px;
+      font-size: 0.8rem;
+    }
+    .btn:disabled { opacity: 0.55; pointer-events: none; }
+
+    /* Album Preview */
+    .album-status {
+      font-size: 0.85rem;
+      margin-top: 8px;
+      color: var(--mint);
+    }
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .album-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 1;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+    }
+    .album-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .album-badge {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      background: rgba(18, 9, 28, 0.86);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 3px 5px;
+      border-radius: 7px;
+      text-align: center;
+    }
+    .album-badge.quiz { border: 1px solid var(--pink); color: #ff9ec7; }
+    .album-badge.mem { border: 1px solid var(--mint); color: var(--mint); }
+
+    /* Sub-cards (Domande Quiz / Gratta e vinci) */
+    .subcard {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .subcard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: var(--pink);
+      font-size: 0.95rem;
+    }
+    .quiz-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .quiz-thumb {
+      width: 68px;
+      height: 68px;
+      border-radius: 10px;
+      background: var(--input) center/cover no-repeat;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 4px;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .opt-radio {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--muted);
+      background: var(--input);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+    .opt-radio:checked {
+      border-color: var(--mint);
+      background: var(--mint);
+      color: #12091c;
+    }
+    .opt-radio:checked::after { content: '✓'; font-weight: 700; }
+
+    .scratch-row {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    /* Barra Salva in basso */
+    .savebar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: rgba(18, 9, 28, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--card-border);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .savebar .btn.save {
+      width: 100%;
+      max-width: 440px;
+      padding: 14px;
+      font-size: 1.05rem;
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(255, 95, 162, 0.4);
+    }
+    .toast {
+      position: fixed;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--mint);
+      color: #12091c;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 60;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .tag-help {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 11px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .tag-help code { color: var(--yellow); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      🎂 <div>Configura Sorpresa<span>Compleanno di Pucla</span></div>
+    </div>
+    <div class="quick-links">
+      <a class="pill-link" href="/birthday" target="_blank">⏳ Countdown</a>
+      <a class="pill-link primary" href="/birthday?preview=1&reset=1&refresh=1" target="_blank">▶️ Prova Gioco</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. ALBUM GOOGLE PHOTOS -->
+    <section class="section">
+      <div class="section-head">
+        <h2>📸 1. Album Google Photos</h2>
+      </div>
+      <p class="desc">
+        Incolla il link dell'album condiviso. Le prime foto andranno alle Polaroid del <b>Quiz</b>, le successive 6 diventeranno le coppie del <b>Memory</b>!
+      </p>
+      <label class="field">
+        Link di condivisione Google Photos
+        <div class="row-input">
+          <input type="url" id="f-albumUrl" placeholder="https://photos.app.goo.gl/...">
+          <button type="button" class="btn" id="btn-check-album">Carica foto</button>
+        </div>
+      </label>
+      <div id="album-status" class="album-status" hidden></div>
+      <div id="album-grid" class="album-grid"></div>
+    </section>
+
+    <!-- 2. CHI & QUANDO -->
+    <section class="section">
+      <div class="section-head">
+        <h2>💖 2. Nomi & Countdown</h2>
+      </div>
+      <div class="tag-help">
+        Nei testi puoi usare <code>{name}</code> (Pucla), <code>{fullName}</code> (Francesca) e <code>{from}</code> (la tua firma).
+      </div>
+      <div class="grid-2">
+        <label class="field">
+          Soprannome ({name})
+          <input type="text" id="f-name" placeholder="Pucla">
+        </label>
+        <label class="field">
+          Nome ({fullName})
+          <input type="text" id="f-fullName" placeholder="Francesca">
+        </label>
+        <label class="field">
+          Da parte di ({from})
+          <input type="text" id="f-from" placeholder="Il tuo Gianmarco">
+        </label>
+        <label class="field">
+          Data e ora sblocco sorpresa
+          <input type="datetime-local" id="f-birthday">
+        </label>
+      </div>
+      <label class="field" style="margin-top: 8px;">
+        Titolo Countdown (prima del 21/11)
+        <input type="text" id="f-cd-title">
+      </label>
+      <label class="field">
+        Frase sotto al Countdown
+        <input type="text" id="f-cd-text">
+      </label>
+    </section>
+
+    <!-- 3. INTRO -->
+    <section class="section">
+      <div class="section-head">
+        <h2>🎉 3. Schermata di Benvenuto</h2>
+      </div>
+      <label class="field">
+        Titolo iniziale
+        <input type="text" id="f-intro-title">
+      </label>
+      <label class="field">
+        Messaggio di benvenuto
+        <textarea id="f-intro-text" rows="3"></textarea>
+      </label>
+      <label class="field">
+        Testo bottone avvio
+        <input type="text" id="f-intro-btn">
+      </label>
+    </section>
+
+    <!-- 4. QUIZ -->
+    <section class="section">
+      <div class="section-head">
+        <h2>💭 4. Domande del Quiz</h2>
+        <button type="button" class="btn secondary" id="btn-add-q">+ Domanda</button>
+      </div>
+      <p class="desc">
+        Spunta il pallino verde accanto alla risposta giusta. Ogni domanda sblocca in ordine una foto dell'album!
+      </p>
+      <label class="field">
+        Titolo sezione Quiz
+        <input type="text" id="f-quiz-title">
+      </label>
+      <div id="quiz-list"></div>
+    </section>
+
+    <!-- 5. MEMORY -->
+    <section class="section">
+      <div class="section-head">
+        <h2>🧩 5. Gioco Memory (6 coppie)</h2>
+      </div>
+      <p class="desc">
+        Usa automaticamente le 6 foto dell'album subito dopo quelle del Quiz.
+      </p>
+      <label class="field">
+        Titolo Memory
+        <input type="text" id="f-mem-title">
+      </label>
+      <label class="field">
+        Sottotitolo
+        <input type="text" id="f-mem-text">
+      </label>
+      <label class="field">
+        Frase di vittoria
+        <input type="text" id="f-mem-win">
+      </label>
+    </section>
+
+    <!-- 6. GRATTA E VINCI -->
+    <section class="section">
+      <div class="section-head">
+        <h2>🎟️ 6. Gratta e Vinci (Buoni Regalo)</h2>
+        <button type="button" class="btn secondary" id="btn-add-sc">+ Biglietto</button>
+      </div>
+      <label class="field">
+        Titolo Gratta e Vinci
+        <input type="text" id="f-sc-title">
+      </label>
+      <label class="field">
+        Istruzioni
+        <input type="text" id="f-sc-text">
+      </label>
+      <div id="sc-list"></div>
+    </section>
+
+    <!-- 7. BIGLIETTO DI AUGURI -->
+    <section class="section">
+      <div class="section-head">
+        <h2>💌 7. Lettera nella Busta (con musica)</h2>
+      </div>
+      <label class="field">
+        Intestazione lettera
+        <input type="text" id="f-card-title">
+      </label>
+      <label class="field">
+        Messaggio della lettera (scritto con effetto macchina da scrivere)
+        <textarea id="f-card-message" rows="5"></textarea>
+      </label>
+      <label class="field">
+        Firma in fondo
+        <textarea id="f-card-signature" rows="2"></textarea>
+      </label>
+    </section>
+
+    <!-- 8. INDIZIO REGALO VERO -->
+    <section class="section">
+      <div class="section-head">
+        <h2>🎁 8. Indizio finale per il Regalo</h2>
+      </div>
+      <label class="field">
+        Titolo schermata finale
+        <input type="text" id="f-clue-title">
+      </label>
+      <label class="field">
+        Indovinello sul nascondiglio del regalo
+        <textarea id="f-clue-riddle" rows="3"></textarea>
+      </label>
+      <label class="field">
+        Testo del bottone "Aiutino 💡" (lascia vuoto se non vuoi l'aiutino)
+        <input type="text" id="f-clue-hint">
+      </label>
+      <label class="field">
+        Testo bottone finale
+        <input type="text" id="f-clue-btn">
+      </label>
+      <label class="field">
+        Saluto finale quando preme il bottone
+        <input type="text" id="f-clue-final">
+      </label>
+    </section>
+
+  </div>
+
+  <div class="savebar">
+    <button type="button" class="btn save" id="btn-save">💾 Salva Configurazione</button>
+  </div>
+
+  <div id="toast" class="toast">✅ Configurazione salvata!</div>
+
+  <script>
+    (function () {
+      var cfg = {};
+      var albumPhotos = [];
+
+      function $(id) { return document.getElementById(id); }
+
+      function showToast(msg, isErr) {
+        var t = $('toast');
+        t.textContent = msg;
+        t.style.background = isErr ? '#ff5c77' : '#3ddc97';
+        t.style.color = isErr ? '#fff' : '#12091c';
+        t.classList.add('show');
+        setTimeout(function () { t.classList.remove('show'); }, 2600);
+      }
+
+      function renderAlbumGrid() {
+        var grid = $('album-grid');
+        grid.innerHTML = '';
+        var qCount = (cfg.quiz && cfg.quiz.questions) ? cfg.quiz.questions.length : 0;
+
+        albumPhotos.forEach(function (p, i) {
+          var div = document.createElement('div');
+          div.className = 'album-item';
+          var label = 'Extra #' + (i + 1);
+          var cls = '';
+          if (i < qCount) {
+            label = 'Quiz #' + (i + 1);
+            cls = 'quiz';
+          } else if (i < qCount + 6) {
+            label = 'Memory #' + (i - qCount + 1);
+            cls = 'mem';
+          }
+          div.innerHTML =
+            '<img src="' + p.url + '" loading="lazy" alt="">' +
+            '<div class="album-badge ' + cls + '">' + label + '</div>';
+          grid.appendChild(div);
+        });
+
+        // Aggiorna anche le miniature dentro le card del Quiz
+        var thumbs = document.querySelectorAll('.quiz-thumb');
+        for (var i = 0; i < thumbs.length; i++) {
+          var gp = albumPhotos[i];
+          if (gp && gp.url) {
+            thumbs[i].style.backgroundImage = 'url("' + gp.url + '")';
+            thumbs[i].textContent = '';
+          } else {
+            thumbs[i].style.backgroundImage = '';
+            thumbs[i].textContent = 'Foto #' + (i + 1);
+          }
+        }
+      }
+
+      function fetchAlbumPreview(url) {
+        var status = $('album-status');
+        if (!url) {
+          albumPhotos = [];
+          status.hidden = true;
+          renderAlbumGrid();
+          return;
+        }
+        status.hidden = false;
+        status.textContent = '⏳ Lettura album Google Photos in corso...';
+        $('btn-check-album').disabled = true;
+
+        fetch('/api/birthday/album-preview?url=' + encodeURIComponent(url))
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            $('btn-check-album').disabled = false;
+            if (!res.ok) throw new Error(res.error || 'Errore');
+            albumPhotos = res.photos || [];
+            var qCount = (cfg.quiz && cfg.quiz.questions) ? cfg.quiz.questions.length : 4;
+            var needed = qCount + 6;
+            status.textContent =
+              '✅ ' + (res.title ? '"' + res.title + '" — ' : '') +
+              'Trovate ' + albumPhotos.length + ' foto (ne servono ' + needed + ': ' + qCount + ' Quiz + 6 Memory)';
+            renderAlbumGrid();
+          })
+          .catch(function (err) {
+            $('btn-check-album').disabled = false;
+            status.textContent = '⚠️ Impossibile leggere l\'album: ' + err.message;
+          });
+      }
+
+      function renderQuestions() {
+        var list = $('quiz-list');
+        list.innerHTML = '';
+        var questions = (cfg.quiz && cfg.quiz.questions) || [];
+
+        questions.forEach(function (q, qi) {
+          var box = document.createElement('div');
+          box.className = 'subcard';
+          var opts = q.options && q.options.length ? q.options : ['', '', '', ''];
+          while (opts.length < 4) opts.push('');
+
+          var optsHtml = '';
+          for (var oi = 0; oi < 4; oi++) {
+            var checked = (Number(q.answer) === oi) ? 'checked' : '';
+            optsHtml +=
+              '<div class="opt-row">' +
+                '<input type="radio" class="opt-radio" name="q-ans-' + qi + '" value="' + oi + '" ' + checked + ' title="Risposta corretta">' +
+                '<input type="text" class="q-opt" data-qi="' + qi + '" data-oi="' + oi + '" placeholder="Opzione ' + (oi + 1) + '" value="' + escapeAttr(opts[oi]) + '">' +
+              '</div>';
+          }
+
+          box.innerHTML =
+            '<div class="subcard-head">' +
+              '<span>Domanda #' + (qi + 1) + ' (Foto #' + (qi + 1) + ')</span>' +
+              '<button type="button" class="btn danger" data-del-q="' + qi + '">Elimina</button>' +
+            '</div>' +
+            '<div class="quiz-top">' +
+              '<div class="quiz-thumb">Foto #' + (qi + 1) + '</div>' +
+              '<label class="field" style="flex:1; margin:0;">' +
+                'Testo della domanda' +
+                '<input type="text" class="q-question" data-qi="' + qi + '" value="' + escapeAttr(q.question || '') + '">' +
+              '</label>' +
+            '</div>' +
+            '<div class="options-list">' + optsHtml + '</div>' +
+            '<label class="field">' +
+              'Dedica sotto la foto Polaroid quando indovina' +
+              '<input type="text" class="q-caption" data-qi="' + qi + '" placeholder="Es. Che bel ricordo ❤️" value="' + escapeAttr(q.caption || '') + '">' +
+            '</label>';
+
+          list.appendChild(box);
+        });
+
+        // Eventi elimina domanda
+        var dels = list.querySelectorAll('[data-del-q]');
+        for (var i = 0; i < dels.length; i++) {
+          dels[i].onclick = function () {
+            collectFromDOM();
+            var idx = Number(this.getAttribute('data-del-q'));
+            cfg.quiz.questions.splice(idx, 1);
+            renderQuestions();
+            renderAlbumGrid();
+          };
+        }
+
+        renderAlbumGrid();
+      }
+
+      function renderScratch() {
+        var list = $('sc-list');
+        list.innerHTML = '';
+        var cards = (cfg.scratch && cfg.scratch.cards) || [];
+
+        cards.forEach(function (c, si) {
+          var box = document.createElement('div');
+          box.className = 'subcard';
+          box.innerHTML =
+            '<div class="subcard-head">' +
+              '<span>Buono Regalo #' + (si + 1) + '</span>' +
+              '<button type="button" class="btn danger" data-del-sc="' + si + '">Elimina</button>' +
+            '</div>' +
+            '<div class="scratch-row">' +
+              '<label class="field" style="margin:0;">Emoji' +
+                '<input type="text" class="sc-icon" data-si="' + si + '" value="' + escapeAttr(c.icon || '🎁') + '" style="text-align:center; font-size:1.3rem;">' +
+              '</label>' +
+              '<label class="field" style="margin:0;">Titolo premio' +
+                '<input type="text" class="sc-title" data-si="' + si + '" value="' + escapeAttr(c.title || '') + '">' +
+              '</label>' +
+            '</div>' +
+            '<label class="field" style="margin-top:8px;">Dettaglio premio' +
+              '<input type="text" class="sc-text" data-si="' + si + '" value="' + escapeAttr(c.text || '') + '">' +
+            '</label>';
+          list.appendChild(box);
+        });
+
+        var dels = list.querySelectorAll('[data-del-sc]');
+        for (var i = 0; i < dels.length; i++) {
+          dels[i].onclick = function () {
+            collectFromDOM();
+            var idx = Number(this.getAttribute('data-del-sc'));
+            cfg.scratch.cards.splice(idx, 1);
+            renderScratch();
+          };
+        }
+      }
+
+      function escapeAttr(s) {
+        return String(s || '')
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
+      function populateForm() {
+        $('f-albumUrl').value = cfg.albumUrl || '';
+        $('f-name').value = cfg.name || 'Pucla';
+        $('f-fullName').value = cfg.fullName || 'Francesca';
+        $('f-from').value = cfg.from || 'Il tuo Gianmarco';
+        $('f-birthday').value = (cfg.birthday || '2026-11-21T00:00:00').slice(0, 16);
+
+        var cd = cfg.countdown || {};
+        $('f-cd-title').value = cd.title || '';
+        $('f-cd-text').value = cd.text || '';
+
+        var intro = cfg.intro || {};
+        $('f-intro-title').value = intro.title || '';
+        $('f-intro-text').value = intro.text || '';
+        $('f-intro-btn').value = intro.button || '';
+
+        var quiz = cfg.quiz || {};
+        $('f-quiz-title').value = quiz.title || '';
+        renderQuestions();
+
+        var mem = cfg.memory || {};
+        $('f-mem-title').value = mem.title || '';
+        $('f-mem-text').value = mem.text || '';
+        $('f-mem-win').value = mem.winText || '';
+
+        var sc = cfg.scratch || {};
+        $('f-sc-title').value = sc.title || '';
+        $('f-sc-text').value = sc.text || '';
+        renderScratch();
+
+        var card = cfg.card || {};
+        $('f-card-title').value = card.title || '';
+        $('f-card-message').value = card.message || '';
+        $('f-card-signature').value = card.signature || '';
+
+        var clue = cfg.clue || {};
+        $('f-clue-title').value = clue.title || '';
+        $('f-clue-riddle').value = clue.riddle || '';
+        $('f-clue-hint').value = clue.hint || '';
+        $('f-clue-btn').value = clue.button || '';
+        $('f-clue-final').value = clue.finalText || '';
+
+        if (cfg.albumPhotos && cfg.albumPhotos.length) {
+          albumPhotos = cfg.albumPhotos;
+          var st = $('album-status');
+          st.hidden = false;
+          st.textContent = '✅ Album collegato (' + albumPhotos.length + ' foto caricate)';
+          renderAlbumGrid();
+        } else if (cfg.albumUrl) {
+          fetchAlbumPreview(cfg.albumUrl);
+        }
+      }
+
+      function collectFromDOM() {
+        cfg.albumUrl = $('f-albumUrl').value.trim();
+        cfg.name = $('f-name').value.trim() || 'Pucla';
+        cfg.nickname = cfg.name;
+        cfg.fullName = $('f-fullName').value.trim() || 'Francesca';
+        cfg.from = $('f-from').value.trim();
+        var dt = $('f-birthday').value || '2026-11-21T00:00';
+        cfg.birthday = dt.length === 16 ? dt + ':00' : dt;
+
+        cfg.countdown = cfg.countdown || {};
+        cfg.countdown.title = $('f-cd-title').value;
+        cfg.countdown.text = $('f-cd-text').value;
+
+        cfg.intro = cfg.intro || {};
+        cfg.intro.title = $('f-intro-title').value;
+        cfg.intro.text = $('f-intro-text').value;
+        cfg.intro.button = $('f-intro-btn').value;
+
+        cfg.quiz = cfg.quiz || { questions: [], wrong: ["Mmm... ritenta Pucla! 😜", "Fuochino! 🔥", "Ma come?! Riprova 🙈"] };
+        cfg.quiz.title = $('f-quiz-title').value;
+
+        var qCards = document.querySelectorAll('#quiz-list .subcard');
+        var newQuestions = [];
+        for (var qi = 0; qi < qCards.length; qi++) {
+          var cardEl = qCards[qi];
+          var qText = cardEl.querySelector('.q-question').value;
+          var qCap = cardEl.querySelector('.q-caption').value;
+          var optInputs = cardEl.querySelectorAll('.q-opt');
+          var opts = [];
+          for (var oi = 0; oi < optInputs.length; oi++) opts.push(optInputs[oi].value);
+          var checkedRadio = cardEl.querySelector('input[type="radio"]:checked');
+          var ans = checkedRadio ? Number(checkedRadio.value) : 0;
+          newQuestions.push({
+            question: qText,
+            options: opts,
+            answer: ans,
+            caption: qCap
+          });
+        }
+        cfg.quiz.questions = newQuestions;
+
+        cfg.memory = cfg.memory || { photos: [], emoji: ["🎂", "💖", "🌹", "🍰", "🎁", "🥂"] };
+        cfg.memory.title = $('f-mem-title').value;
+        cfg.memory.text = $('f-mem-text').value;
+        cfg.memory.winText = $('f-mem-win').value;
+
+        cfg.scratch = cfg.scratch || { cards: [] };
+        cfg.scratch.title = $('f-sc-title').value;
+        cfg.scratch.text = $('f-sc-text').value;
+        var scCards = document.querySelectorAll('#sc-list .subcard');
+        var newSc = [];
+        for (var si = 0; si < scCards.length; si++) {
+          var scEl = scCards[si];
+          newSc.push({
+            icon: scEl.querySelector('.sc-icon').value || '🎁',
+            title: scEl.querySelector('.sc-title').value,
+            text: scEl.querySelector('.sc-text').value
+          });
+        }
+        cfg.scratch.cards = newSc;
+
+        cfg.card = cfg.card || {};
+        cfg.card.title = $('f-card-title').value;
+        cfg.card.message = $('f-card-message').value;
+        cfg.card.signature = $('f-card-signature').value;
+
+        cfg.clue = cfg.clue || {};
+        cfg.clue.title = $('f-clue-title').value;
+        cfg.clue.riddle = $('f-clue-riddle').value;
+        cfg.clue.hint = $('f-clue-hint').value;
+        cfg.clue.button = $('f-clue-btn').value;
+        cfg.clue.finalText = $('f-clue-final').value;
+      }
+
+      $('btn-check-album').onclick = function () {
+        collectFromDOM();
+        fetchAlbumPreview($('f-albumUrl').value.trim());
+      };
+
+      $('btn-add-q').onclick = function () {
+        collectFromDOM();
+        cfg.quiz.questions.push({
+          question: 'Nuova domanda...',
+          options: ['Risposta 1', 'Risposta 2', 'Risposta 3', 'Risposta 4'],
+          answer: 0,
+          caption: ''
+        });
+        renderQuestions();
+      };
+
+      $('btn-add-sc').onclick = function () {
+        collectFromDOM();
+        cfg.scratch.cards.push({
+          icon: '🎁',
+          title: 'Nuovo buono regalo',
+          text: 'Descrizione del premio'
+        });
+        renderScratch();
+      };
+
+      $('btn-save').onclick = function () {
+        collectFromDOM();
+        $('btn-save').disabled = true;
+        $('btn-save').textContent = '⏳ Salvataggio...';
+
+        fetch('/api/birthday', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cfg)
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            $('btn-save').disabled = false;
+            $('btn-save').textContent = '💾 Salva Configurazione';
+            if (!res.ok) throw new Error(res.error || 'Errore salvataggio');
+            showToast('✅ Salvato! Pronto per Pucla 💖');
+          })
+          .catch(function (err) {
+            $('btn-save').disabled = false;
+            $('btn-save').textContent = '💾 Salva Configurazione';
+            showToast('❌ Errore: ' + err.message, true);
+          });
+      };
+
+      // Caricamento iniziale
+      fetch('/api/birthday?raw=1&t=' + Date.now())
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          cfg = data;
+          populateForm();
+        })
+        .catch(function () {
+          showToast('Errore caricamento configurazione', true);
+        });
+    })();
+  </script>
+</body>
+</html>
