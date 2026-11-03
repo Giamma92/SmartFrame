@@ -1286,7 +1286,14 @@
         badgeText = '✨ Ricordo del ' + year;
       }
 
-      dateStr = location ? '📍 ' + location + ' • ' + formattedDate : formattedDate;
+      var flag = '';
+      var locLower = (location || '').toLowerCase();
+      if (locLower.indexOf('mallorca') >= 0 || locLower.indexOf('spagna') >= 0 || locLower.indexOf('spain') >= 0) flag = '🇪🇸 ';
+      else if (locLower.indexOf('karpathos') >= 0 || locLower.indexOf('grecia') >= 0 || locLower.indexOf('greece') >= 0) flag = '🇬🇷 ';
+      else if (locLower.indexOf('italia') >= 0 || locLower.indexOf('italy') >= 0) flag = '🇮🇹 ';
+      else if (locLower) flag = '📍 ';
+
+      dateStr = location ? flag + location + ' • ' + formattedDate : formattedDate;
     }
 
     if (els.photoMemoryBadge) {
@@ -1757,6 +1764,17 @@
       window.location.reload(true);
     }
   }, 60 * 1000);
+
+  // Anti Burn-in TV: micro-drift pixel shift impercettibile ogni 8 minuti per preservare i fosfori/OLED
+  setInterval(function antiBurnInPixelShift() {
+    var dx = (Math.floor(Math.random() * 5) - 2); // -2px..+2px
+    var dy = (Math.floor(Math.random() * 5) - 2);
+    var targets = document.querySelectorAll('.panel, .top-left-container, .clock, .photo-caption');
+    for (var i = 0; i < targets.length; i++) {
+      targets[i].style.transform = 'translate3d(' + dx + 'px, ' + dy + 'px, 0)';
+      targets[i].style.transition = 'transform 6s ease-in-out';
+    }
+  }, 8 * 60 * 1000);
 
   setupLiveSync();
   pollSettingsVersion();
