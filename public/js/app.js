@@ -216,23 +216,23 @@
   // ------------------------------------------------ Musica / Web Radio Player ---
   var userWantsAudio = true; // Flag dell'utente (attiva/disattiva)
   var audioPlaying = false;  // Effettivo stato di riproduzione audio dal browser
-  var audioReconnecting = false;
+  var audioConnecting = false; // Buffer o connessione in corso
   var audioVolume = 0.35;
   var currentRadioUrl = 'https://lofi.stream.laut.fm/lofi';
   var currentRadioName = 'Lofi Chill';
   var reconnectTimer = null;
   var reconnectAttempts = 0;
-  var MAX_RECONNECT_ATTEMPTS = 15;
+  var MAX_RECONNECT_ATTEMPTS = 5;
 
   function setupAudio() {
     var a = els.bgAudio;
     if (!a) return;
     a.volume = audioVolume;
 
-    // Monitora gli eventi reali dell'elemento Audio HTML5 per restare sempre sincronizzati
+    // Monitora gli eventi reali dell'elemento Audio HTML5
     a.addEventListener('playing', function () {
       audioPlaying = true;
-      audioReconnecting = false;
+      audioConnecting = false;
       reconnectAttempts = 0;
       if (reconnectTimer) {
         clearTimeout(reconnectTimer);
@@ -243,22 +243,17 @@
 
     a.addEventListener('pause', function () {
       audioPlaying = false;
+      audioConnecting = false;
       updateMusicUI();
-      // Se l'utente non ha spento la musica ma il flusso si è fermato (es. TV sleep o drop di rete)
-      if (userWantsAudio && !audioReconnecting) {
+      if (userWantsAudio && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
         scheduleAudioReconnect('Stream interrotto o in pausa');
       }
     });
 
     a.addEventListener('waiting', function () {
       if (userWantsAudio) {
+        audioConnecting = true;
         updateMusicUI('buffering');
-      }
-    });
-
-    a.addEventListener('stalled', function () {
-      if (userWantsAudio) {
-        scheduleAudioReconnect('Buffer streaming bloccato');
       }
     });
 
@@ -267,6 +262,7 @@
       var msg = err ? ('Codice ' + err.code + ': ' + err.message) : 'Errore rete';
       console.warn('[Audio] Errore flusso radio:', msg);
       audioPlaying = false;
+      audioConnecting = false;
       if (userWantsAudio) {
         scheduleAudioReconnect('Errore di connessione');
       } else {
@@ -274,26 +270,15 @@
       }
     });
 
-    a.addEventListener('ended', function () {
-      // Uno stream radio live non termina mai spontaneamente: se scatta 'ended' la connessione è caduta
-      audioPlaying = false;
-      if (userWantsAudio) {
-        scheduleAudioReconnect('Stream live terminato');
-      } else {
-        updateMusicUI();
-      }
-    });
-
-    // Risveglio Autoplay al tocco/click/tasto sul telecomando o schermo TV
-    function onUserGesture() {
-      if (userWantsAudio && !audioPlaying && !audioReconnecting) {
-        console.log('[Audio] Gesto utente rilevato, avvio streaming audio');
+    // Sblocco audio al tocco/click dell'utente
+    function onFirstUserGesture() {
+      if (!audioPlaying && userWantsAudio && !audioConnecting) {
+        console.log('[Audio] Gesto utente rilevato, avvio streaming');
         startAudioStream(true);
       }
     }
-    document.addEventListener('keydown', onUserGesture);
-    document.addEventListener('click', onUserGesture);
-    document.addEventListener('touchstart', onUserGesture);
+    document.addEventListener('click', onFirstUserGesture);
+    document.addEventListener('touchstart', onFirstUserGesture);
 
     if (els.musicIndicator) {
       els.musicIndicator.addEventListener('click', function (e) {
@@ -309,23 +294,19 @@
   }
 
   function scheduleAudioReconnect(reason) {
-    if (!userWantsAudio) return;
-    if (reconnectTimer) return; // Riconnessione già in coda
+    if (!userWantsAudio || reconnectTimer) return;
     if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      console.warn('[Audio] Troppi tentativi di riconnessione falliti. In attesa di interazione.');
-      userWantsAudio = false;
+      console.warn('[Audio] Riconnessione radio terminata. In attesa di interazione.');
       audioPlaying = false;
-      audioReconnecting = false;
+      audioConnecting = false;
       updateMusicUI();
-      showToast('⚠️ Radio interrotta: clicca per ricollegare');
       return;
     }
 
-    audioReconnecting = true;
     reconnectAttempts++;
+    audioConnecting = true;
     updateMusicUI('reconnecting');
-    var delay = Math.min(2500 * reconnectAttempts, 12000);
-    console.log('[Audio] ' + reason + ' -> tentativo ' + reconnectAttempts + '/' + MAX_RECONNECT_ATTEMPTS + ' tra ' + (delay / 1000) + 's');
+    var delay = Math.min(3000 * reconnectAttempts, 12000);
 
     reconnectTimer = setTimeout(function () {
       reconnectTimer = null;
@@ -342,27 +323,28 @@
       currentRadioUrl = 'https://lofi.stream.laut.fm/lofi';
     }
 
+    if (audioPlaying) return;
+
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;
     }
 
-    try { a.pause(); } catch (e) {}
+    userWantsAudio = true;
+    audioConnecting = true;
+    updateMusicUI('buffering');
 
-    // Per flussi live HTTP/Icecast/Shoutcast, impostare sempre una URL con timestamp
-    // forza il browser TV a rilasciare la vecchia socket morta e aprirne una nuova senza cache
-    var base = currentRadioUrl;
-    var sep = base.indexOf('?') >= 0 ? '&' : '?';
-    var liveUrl = base + sep + '_sf=' + Date.now();
-
-    a.src = liveUrl;
+    // Imposta la sorgente solo se non è già presente
+    if (!a.src || a.src.indexOf('laut.fm') === -1) {
+      a.src = currentRadioUrl;
+    }
     a.volume = audioVolume;
 
     var p = a.play();
     if (p && p.then) {
       p.then(function () {
         audioPlaying = true;
-        audioReconnecting = false;
+        audioConnecting = false;
         reconnectAttempts = 0;
         updateMusicUI();
         if (userTriggered) {
@@ -370,14 +352,18 @@
         }
       }).catch(function (err) {
         audioPlaying = false;
-        audioReconnecting = false;
+        audioConnecting = false;
         updateMusicUI('unplayed');
         if (err && err.name === 'NotAllowedError') {
-          console.log('[Audio] Autoplay bloccato dalla TV (in attesa di gesto o tasto telecomando)');
-          showToast('🔇 Premi OK per autorizzare audio');
+          console.log('[Audio] Autoplay bloccato dalla policy browser (necessaria interazione utente)');
+          if (userTriggered) {
+            showToast('🔇 Clicca su Lofi per ascoltare');
+          }
         } else {
           console.warn('[Audio] a.play() fallito:', err);
-          showToast('⚠️ Errore riproduzione stream');
+          if (userTriggered) {
+            showToast('⚠️ Errore connessione radio');
+          }
           scheduleAudioReconnect('Tentativo avvio fallito');
         }
       });
@@ -393,25 +379,21 @@
       reconnectTimer = null;
     }
 
-    if (audioPlaying || audioReconnecting) {
-      // Spegnimento manuale da parte dell'utente
+    if (audioPlaying || audioConnecting) {
+      // Spegnimento pulito: pausa senza cancellare src con stringa vuota
       userWantsAudio = false;
       audioPlaying = false;
-      audioReconnecting = false;
+      audioConnecting = false;
       reconnectAttempts = 0;
       try {
         a.pause();
-        a.src = '';
       } catch (e) {}
       updateMusicUI();
       showToast('🔇 Musica disattivata');
     } else {
-      // Accensione manuale da parte dell'utente: ricarica forzata da zero!
+      // Accensione manuale
       userWantsAudio = true;
-      audioReconnecting = true;
-      reconnectAttempts = 0;
-      updateMusicUI('buffering');
-      showToast('⏳ Avvio musica...');
+      showToast('⏳ Connessione ' + currentRadioName + '...');
       startAudioStream(true);
     }
   }
@@ -422,21 +404,24 @@
     var labelEl = els.musicIndicator.querySelector('.music-label');
     var displayName = currentRadioName || 'Musica';
 
-    if (status === 'reconnecting' || status === 'buffering') {
+    if (status === 'reconnecting' || status === 'buffering' || audioConnecting) {
       if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('clock') : '⏳';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.remove('is-muted');
+      els.musicIndicator.classList.add('is-loading');
       els.musicIndicator.title = displayName + ' (connessione in corso...)';
     } else if (audioPlaying) {
       if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('music') : '🎵';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.remove('is-muted');
-      els.musicIndicator.title = displayName + ' attiva (clicca o premi M per silenziare)';
+      els.musicIndicator.classList.remove('is-loading');
+      els.musicIndicator.title = displayName + ' attiva (clicca o premi rosso per disattivare)';
     } else {
       if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('musicOff') : '🔇';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.add('is-muted');
-      els.musicIndicator.title = displayName + ' mutata (clicca o premi M per riprodurre)';
+      els.musicIndicator.classList.remove('is-loading');
+      els.musicIndicator.title = displayName + ' mutata (clicca o premi rosso per attivare)';
     }
   }
 
@@ -789,18 +774,20 @@
     }
 
     var newRadioUrl = t.radioUrl || '';
-    var newRadioName = t.radioName || 'Musica';
-    var radioUrlChanged = Boolean(newRadioUrl && newRadioUrl !== currentRadioUrl);
+    var newRadioName = t.radioName || currentRadioName || 'Lofi Chill';
+    if (newRadioName) currentRadioName = newRadioName;
 
-    currentRadioName = newRadioName;
+    var radioUrlChanged = Boolean(newRadioUrl && newRadioUrl !== currentRadioUrl);
     if (radioUrlChanged) {
       currentRadioUrl = newRadioUrl;
-      if (userWantsAudio) {
-        startAudioStream(false);
+      if (els.bgAudio) {
+        els.bgAudio.src = currentRadioUrl;
+        if (userWantsAudio && audioPlaying) {
+          startAudioStream(false);
+        }
       }
-    } else {
-      updateMusicUI();
     }
+    updateMusicUI();
 
     if (currentThemeId !== t.id) {
       currentThemeId = t.id;
@@ -1534,6 +1521,10 @@
     } else if (matches(e, ['ArrowRight', 'Right'], KEY.RIGHT) ||
                matches(e, ['Enter', 'OK', 'Accept'], KEY.OK)) {
       if (now - lastKeyAt > 250 && state.photos.length) {
+        // Se l'audio era in attesa di sblocco utente per policy autoplay, OK avvia l'audio
+        if (userWantsAudio && !audioPlaying && !audioConnecting) {
+          startAudioStream(true);
+        }
         if (state.paused) togglePause();
         goNext(true);
       }
