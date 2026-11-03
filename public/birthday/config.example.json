@@ -1,67 +1,65 @@
 {
-  "name": "Amore",
-  "from": "Il tuo lui",
+  "name": "Pucla",
+  "nickname": "Pucla",
+  "fullName": "Francesca",
+  "from": "Il tuo Gianmarco",
   "birthday": "2026-11-21T00:00:00",
-  "age": 30,
+  "albumUrl": "",
 
   "countdown": {
-    "title": "Shhh... qualcosa sta arrivando! 🤫",
-    "text": "Questa pagina si sblocca solo il giorno giusto. Torna a trovarmi!",
-    "readyText": "È arrivato il grande giorno! 🎉"
+    "title": "Shhh... Pucla, qualcosa sta arrivando! 🤫",
+    "text": "Questa sorpresa si sblocca solo per il compleanno di Francesca (21 novembre). Torna a trovarmi!",
+    "readyText": "È arrivato il grande giorno, {name}! 🎉"
   },
 
   "intro": {
     "title": "Tanti auguri, {name}! 🎂",
-    "text": "Oggi è il tuo giorno e ho preparato un piccolo gioco solo per te.\nSupera le prove per sbloccare la sorpresa finale... pronta?",
+    "text": "Buon compleanno {fullName}!\nOggi è il tuo giorno e ho preparato un piccolo gioco solo per te.\nSupera le prove per sbloccare la sorpresa finale... pronta?",
     "button": "Iniziamo! 🚀"
   },
 
   "quiz": {
-    "title": "Quanto ti ricordi di noi? 💭",
+    "title": "Quanto ti ricordi di noi, {name}? 💭",
     "questions": [
       {
         "question": "Dove ci siamo dati il primo bacio?",
         "options": ["Al mare", "Sotto casa tua", "Al cinema", "In macchina"],
         "answer": 1,
-        "photo": "quiz1.jpg",
         "caption": "Esatto! E da lì non ti ho più lasciata andare ❤️"
       },
       {
         "question": "Qual è stato il nostro primo viaggio insieme?",
         "options": ["Parigi", "Roma", "Barcellona", "Amsterdam"],
         "answer": 2,
-        "photo": "quiz2.jpg",
-        "caption": "Barcellona, sangria e risate infinite 🌞"
+        "caption": "Che ricordi meravigliosi insieme 🌞"
       },
       {
-        "question": "Qual è il mio soprannome per te?",
-        "options": ["Patatina", "Cucciola", "Topolina", "Stellina"],
+        "question": "Qual è il soprannome più bello del mondo?",
+        "options": ["Pucla", "Cucciola", "Topolina", "Stellina"],
         "answer": 0,
-        "photo": "quiz3.jpg",
-        "caption": "La mia patatina preferita 🥔💛"
+        "caption": "La mia {name} preferita 💛"
       },
       {
-        "question": "Cosa ordiniamo SEMPRE il venerdì sera?",
-        "options": ["Sushi", "Pizza", "Hamburger", "Kebab"],
+        "question": "Cosa ordiniamo SEMPRE quando vogliamo festeggiare?",
+        "options": ["Sushi", "Pizza", "Hamburger", "Pokè"],
         "answer": 0,
-        "photo": "quiz4.jpg",
-        "caption": "Sushi forever 🍣"
+        "caption": "Sempre una certezza 🍣"
       }
     ],
-    "wrong": ["Mmm... ritenta! 😜", "Fuochino! 🔥", "Ma come?! Riprova 🙈", "Quasi... dai! 💪"]
+    "wrong": ["Mmm... ritenta Pucla! 😜", "Fuochino! 🔥", "Ma come?! Riprova 🙈", "Quasi... dai! 💪"]
   },
 
   "memory": {
-    "title": "Trova le coppie! 🧩",
-    "text": "Gira le carte e trova i nostri ricordi uguali.",
-    "photos": ["mem1.jpg", "mem2.jpg", "mem3.jpg", "mem4.jpg", "mem5.jpg", "mem6.jpg"],
+    "title": "Trova le coppie dei nostri ricordi! 🧩",
+    "text": "Gira le carte e trova le 6 coppie uguali.",
+    "photos": [],
     "emoji": ["🎂", "💖", "🌹", "🍰", "🎁", "🥂"],
-    "winText": "Bravissima! Memoria da elefantino 🐘💕"
+    "winText": "Bravissima {name}! Memoria infallibile 🐘💕"
   },
 
   "scratch": {
-    "title": "Gratta e vinci! 🎟️",
-    "text": "Ogni biglietto è vincente. Gratta (o premi OK) per scoprire i tuoi premi!",
+    "title": "Gratta e vinci per {name}! 🎟️",
+    "text": "Ogni biglietto è vincente. Gratta col dito (o premi OK col telecomando) per scoprire i tuoi premi!",
     "cards": [
       { "icon": "🍝", "title": "Cena romantica", "text": "Nel ristorante che scegli tu" },
       { "icon": "💆‍♀️", "title": "Massaggio", "text": "30 minuti, senza lamentarmi" },
@@ -72,16 +70,16 @@
 
   "card": {
     "title": "Buon compleanno, {name}!",
-    "message": "Grazie per ogni risata, ogni abbraccio e ogni giorno passato insieme.\nSei la cosa più bella che mi sia capitata.\nTi auguro un anno pieno di sogni che si avverano...\n...e io sarò lì, accanto a te, a festeggiarli tutti. ❤️",
+    "message": "Cara {fullName}, la mia dolce {name},\ngrazie per ogni risata, ogni abbraccio e ogni giorno passato insieme.\nSei la cosa più bella che mi sia capitata.\nTi auguro un anno pieno di sogni che si avverano...\n...e io sarò lì, accanto a te, a festeggiarli tutti. ❤️",
     "signature": "Con tutto il mio amore,\n{from}",
     "music": ""
   },
 
   "clue": {
-    "title": "Manca ancora una cosa... 🎁",
+    "title": "Manca ancora una cosa, {name}... 🎁",
     "riddle": "Il tuo regalo vero ti aspetta in un posto\ndove ogni mattina ti prepari per uscire,\nma dove di solito non guardi mai in alto...",
     "hint": "Prova a guardare sopra l'armadio della camera 😉",
     "button": "Vado a cercarlo! 🏃‍♀️",
-    "finalText": "Corri! E... tanti auguri ancora 💝"
+    "finalText": "Corri {name}! E... tanti auguri ancora 💝"
   }
 }

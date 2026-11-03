@@ -115,7 +115,7 @@ function isGoogleInternalToken(s) {
   return false;
 }
 
-async function fetchGooglePhotos(albumUrl) {
+export async function fetchGooglePhotos(albumUrl) {
   if (!albumUrl) return [];
   try {
     console.log('[photos] Sincronizzazione album Google Photos...');

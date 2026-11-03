@@ -17,7 +17,7 @@ import { getAuthUrl, handleOAuthCallback, getEvents } from './services/calendar.
 import { getWeather } from './services/weather.js';
 import { getHomeAssistant } from './services/homeassistant.js';
 import { loadSettings, saveSettings, getCurrentTheme } from './services/themes.js';
-import { getPhotos, resolvePhoto, fetchAlbumTitle } from './services/photos.js';
+import { getPhotos, resolvePhoto, fetchAlbumTitle, fetchGooglePhotos } from './services/photos.js';
 
 const app = express();
 const STARTED_AT = new Date().toISOString();
@@ -161,16 +161,57 @@ app.get('/api/camera/snapshot', async (_req, res) => {
 // Contenuti personali (config.json + foto) in data/birthday/ → non finiscono
 // nello slideshow né su git. Se manca config.json si usa l'esempio.
 const BIRTHDAY_DIR = path.join(ROOT_DIR, 'data', 'birthday');
+let birthdayAlbumCache = { url: '', at: 0, photos: [] };
+
+async function getBirthdayAlbumPhotos(url, forceRefresh = false) {
+  const clean = String(url || '').trim();
+  if (!clean) return [];
+  const now = Date.now();
+  if (!forceRefresh && birthdayAlbumCache.url === clean && (now - birthdayAlbumCache.at) < 5 * 60_000 && birthdayAlbumCache.photos.length) {
+    return birthdayAlbumCache.photos;
+  }
+  const photos = await fetchGooglePhotos(clean);
+  birthdayAlbumCache = { url: clean, at: now, photos };
+  return photos;
+}
 
 app.get(['/birthday', '/birthday/'], (_req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'index.html'));
 });
 
-app.get('/api/birthday', async (_req, res) => {
+app.get('/api/birthday', async (req, res) => {
   for (const file of [path.join(BIRTHDAY_DIR, 'config.json'), path.join(ROOT_DIR, 'public', 'birthday', 'config.example.json')]) {
     try {
       const json = JSON.parse(await fsp.readFile(file, 'utf8'));
       json._source = file.includes('example') ? 'example' : 'custom';
+
+      const albumUrl = (json.albumUrl || process.env.BIRTHDAY_ALBUM_URL || '').trim();
+      if (albumUrl) {
+        const gPhotos = await getBirthdayAlbumPhotos(albumUrl, req.query.refresh === '1');
+        json.albumPhotos = gPhotos.map(p => ({ url: p.url, caption: p.caption || p.comment || '' }));
+
+        // Mappa in ordine: prime N foto al Quiz, le successive 6 al Memory
+        const questions = json.quiz?.questions || [];
+        let cursor = 0;
+        for (let i = 0; i < questions.length; i++) {
+          const gp = gPhotos[cursor++];
+          if (gp) {
+            if (!questions[i].photo || /^quiz\d+\./i.test(questions[i].photo)) {
+              questions[i].photo = gp.url;
+            }
+            if (!questions[i].caption && (gp.caption || gp.comment)) {
+              questions[i].caption = gp.caption || gp.comment;
+            }
+          }
+        }
+        if (json.memory) {
+          const memPhotos = gPhotos.slice(cursor, cursor + 6).map(p => p.url);
+          if (memPhotos.length > 0) {
+            json.memory.photos = memPhotos;
+          }
+        }
+      }
+
       return res.set('Cache-Control', 'no-store').json(json);
     } catch (err) {
       if (err.code !== 'ENOENT') console.error('[birthday] config non valida:', file, err.message);

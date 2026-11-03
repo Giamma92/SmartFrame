@@ -40,7 +40,9 @@
   function fill(str) {
     if (str === undefined || str === null) return '';
     return String(str)
-      .replace(/\{name\}/g, cfg.name || '')
+      .replace(/\{name\}/g, cfg.name || 'Pucla')
+      .replace(/\{nickname\}/g, cfg.nickname || cfg.name || 'Pucla')
+      .replace(/\{fullName\}/g, cfg.fullName || 'Francesca')
       .replace(/\{from\}/g, cfg.from || '')
       .replace(/\{age\}/g, cfg.age || '');
   }
@@ -152,35 +154,55 @@
   };
   function sfx(name) { try { SFX[name](); } catch (e) { /* audio non disponibile */ } }
 
-  /** "Tanti auguri a te" sintetizzata (effetto carillon), oppure mp3 da config. */
+  var songTimer = null;
+
+  /** "Tanti auguri a te" sintetizzata (effetto carillon + accordi allegri, in loop), oppure mp3 da config. */
   function playSong() {
     if (muted) return;
+    stopSong();
     if (cfg.card && cfg.card.music) {
       if (!songAudio) {
         songAudio = new Audio(media(cfg.card.music));
-        songAudio.loop = false;
+        songAudio.loop = true;
       }
       songAudio.currentTime = 0;
       var p = songAudio.play();
       if (p && p.catch) p.catch(function () { /* autoplay bloccato */ });
       return;
     }
-    var G4 = 392, A4 = 440, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
+    var G3 = 196, C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23, G4 = 392, A4 = 440, B4 = 493.88;
+    var C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
     var melody = [
-      [G4, .75], [G4, .25], [A4, 1], [G4, 1], [C5, 1], [B4, 2],
-      [G4, .75], [G4, .25], [A4, 1], [G4, 1], [D5, 1], [C5, 2],
-      [G4, .75], [G4, .25], [G5, 1], [E5, 1], [C5, 1], [B4, 1], [A4, 2],
-      [F5, .75], [F5, .25], [E5, 1], [C5, 1], [D5, 1], [C5, 3]
+      [G4, .75], [G4, .25], [A4, 1, [C4, E4]], [G4, 1], [C5, 1], [B4, 2, [G3, D4]],
+      [G4, .75], [G4, .25], [A4, 1, [G3, D4]], [G4, 1], [D5, 1], [C5, 2, [C4, E4]],
+      [G4, .75], [G4, .25], [G5, 1, [C4, E4]], [E5, 1], [C5, 1], [B4, 1], [A4, 2, [F4, A4]],
+      [F5, .75], [F5, .25], [E5, 1, [C4, G4]], [C5, 1], [D5, 1, [G3, B4]], [C5, 3, [C4, E4, G4]]
     ];
-    var beat = 0.42;
-    var t = 0.1;
-    for (var i = 0; i < melody.length; i++) {
-      var f = melody[i][0];
-      var d = melody[i][1] * beat;
-      tone(f, t, Math.max(d * 1.6, 0.5), 'triangle', 0.22);
-      tone(f * 2, t, Math.max(d, 0.3), 'sine', 0.06); // brillantezza carillon
-      t += d;
+    function scheduleOnce() {
+      if (muted) return;
+      var beat = 0.40;
+      var t = 0.08;
+      for (var i = 0; i < melody.length; i++) {
+        var f = melody[i][0];
+        var d = melody[i][1] * beat;
+        var chord = melody[i][2];
+        tone(f, t, Math.max(d * 1.5, 0.45), 'triangle', 0.22);
+        tone(f * 2, t, Math.max(d * 0.9, 0.28), 'sine', 0.07);
+        if (chord) {
+          for (var c = 0; c < chord.length; c++) {
+            tone(chord[c], t, Math.max(d * 2.2, 0.8), 'sine', 0.06);
+          }
+        }
+        t += d;
+      }
+      songTimer = setTimeout(scheduleOnce, Math.round((t + 1.2) * 1000));
     }
+    scheduleOnce();
+  }
+
+  function stopSong() {
+    if (songTimer) { clearTimeout(songTimer); songTimer = null; }
+    if (songAudio) { try { songAudio.pause(); } catch (e) {} }
   }
 
   function toggleMute() {
@@ -188,6 +210,7 @@
     $('mute-btn').textContent = muted ? '🔇' : '🔊';
     if (master) master.gain.value = muted ? 0 : 0.5;
     if (songAudio) songAudio.muted = muted;
+    if (muted && songTimer) { clearTimeout(songTimer); songTimer = null; }
   }
 
   // ----------------------------------------------------------- Coriandoli ---
@@ -836,13 +859,14 @@
     $('replay-btn').hidden = false;
     focusFirst($('replay-btn'));
   };
-  $('replay-btn').onclick = function () { saveProgress({}); goStep('intro'); };
+  $('replay-btn').onclick = function () { stopSong(); saveProgress({}); goStep('intro'); };
   $('mute-btn').onclick = toggleMute;
 
   // -------------------------------------------------------------- Avvio ---
   if (params.reset) saveProgress({});
 
-  getJSON('/api/birthday', function (err, data) {
+  var apiQuery = params.refresh ? '?refresh=1' : '';
+  getJSON('/api/birthday' + apiQuery, function (err, data) {
     if (err) {
       $('s-loading').innerHTML = '<div class="card-box"><h2>Ops! 😅</h2><p>Non riesco a caricare la sorpresa.</p></div>';
       return;

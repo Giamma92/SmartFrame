@@ -198,30 +198,17 @@
 
   function updateDimmer(now) {
     if (!els.dimmer) return;
-    var t = currentTheme || {};
-    var smartNight = t.smartNightDim !== false;
-    var ha = state.haData;
-
+    // Disattivato l'oscuramento automatico legato ai sensori lux/luci (causava oscuramenti improvvisi dello schermo)
+    var nd = state.cfg && state.cfg.nightDim;
     var active = false;
-    if (smartNight && ha) {
-      // Notte intelligente: luci spente E (buio lux <= 5 oppure orario 23:00 - 07:00)
-      var hr = now.getHours();
-      var isNightHour = (hr >= 23 || hr < 7);
-      var isDark = ha.illuminance !== null && ha.illuminance <= 5;
-      if (ha.lightsOn === 0 && (isDark || isNightHour)) {
-        active = true;
-      }
-    } else {
-      var nd = state.cfg.nightDim;
-      if (nd && nd.enabled) {
-        var m = now.getHours() * 60 + now.getMinutes();
-        var s = toMinutes(nd.start);
-        var e = toMinutes(nd.end);
-        active = s < e ? (m >= s && m < e) : (m >= s || m < e);
-      }
+    // Solo se esplicitamente richiesto da config (di default no dimmer casuale)
+    if (nd && nd.enabled && nd.activeAtNight) {
+      var m = now.getHours() * 60 + now.getMinutes();
+      var s = toMinutes(nd.start);
+      var e = toMinutes(nd.end);
+      active = s < e ? (m >= s && m < e) : (m >= s || m < e);
     }
-    var level = (state.cfg.nightDim && state.cfg.nightDim.level) || 0.7;
-    els.dimmer.style.opacity = active ? String(level) : '0';
+    els.dimmer.style.opacity = active ? String(nd.level || 0.7) : '0';
   }
 
 
@@ -350,7 +337,10 @@
 
   function startAudioStream(userTriggered) {
     var a = els.bgAudio;
-    if (!a || !currentRadioUrl) return;
+    if (!a) return;
+    if (!currentRadioUrl) {
+      currentRadioUrl = 'https://lofi.stream.laut.fm/lofi';
+    }
 
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
@@ -366,7 +356,6 @@
     var liveUrl = base + sep + '_sf=' + Date.now();
 
     a.src = liveUrl;
-    a.load();
     a.volume = audioVolume;
 
     var p = a.play();
@@ -380,13 +369,15 @@
           showToast('🎵 ' + currentRadioName + ' attiva');
         }
       }).catch(function (err) {
+        audioPlaying = false;
+        audioReconnecting = false;
+        updateMusicUI('unplayed');
         if (err && err.name === 'NotAllowedError') {
           console.log('[Audio] Autoplay bloccato dalla TV (in attesa di gesto o tasto telecomando)');
-          audioPlaying = false;
-          audioReconnecting = false;
-          updateMusicUI('unplayed');
+          showToast('🔇 Premi OK per autorizzare audio');
         } else {
           console.warn('[Audio] a.play() fallito:', err);
+          showToast('⚠️ Errore riproduzione stream');
           scheduleAudioReconnect('Tentativo avvio fallito');
         }
       });
@@ -410,15 +401,17 @@
       reconnectAttempts = 0;
       try {
         a.pause();
-        a.removeAttribute('src'); // Rilascia immediatamente il consumo dati e buffer sulla TV
-        a.load();
+        a.src = '';
       } catch (e) {}
       updateMusicUI();
       showToast('🔇 Musica disattivata');
     } else {
       // Accensione manuale da parte dell'utente: ricarica forzata da zero!
       userWantsAudio = true;
+      audioReconnecting = true;
       reconnectAttempts = 0;
+      updateMusicUI('buffering');
+      showToast('⏳ Avvio musica...');
       startAudioStream(true);
     }
   }
@@ -1523,10 +1516,9 @@
     } else if (matches(e, ['VolumeMute', 'AudioVolumeMute', 'm', 'M'], KEY.MUTE)) {
       if (!e.repeat) toggleAudio();
     } else if (matches(e, ['ColorF0Red', 'Red', 'r', 'R'], KEY.RED)) {
-      // 🔴 Tasto Rosso: Musica / Radio Chill
+      // 🔴 Tasto Rosso: Musica / Radio Chill (toggleAudio gestisce già i toast di avvio/spegnimento)
       if (!e.repeat) {
         toggleAudio();
-        showToast(audioPlaying ? '🎵 Musica attivata' : '🔇 Musica disattivata');
       }
     } else if (matches(e, ['ColorF1Green', 'Green', 'g', 'G'], KEY.GREEN)) {
       // 🟢 Tasto Verde: Mostra / Nascondi tutti i pannelli
