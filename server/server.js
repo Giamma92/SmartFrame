@@ -175,11 +175,14 @@ async function getBirthdayAlbumPhotos(url, forceRefresh = false) {
   return photos;
 }
 
-app.get(['/birthday', '/birthday/'], (_req, res) => {
+app.get(['/birthday', '/birthday/'], (req, res) => {
+  if (req.query.config !== undefined || req.query.edit !== undefined) {
+    return res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'config.html'));
+  }
   res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'index.html'));
 });
 
-app.get(['/birthday/config', '/birthday/config/'], (_req, res) => {
+app.get(['/birthday-config', '/birthday/config', '/birthday/config/'], (_req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'config.html'));
 });
 

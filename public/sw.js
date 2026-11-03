@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smart-frame-v13';
+const CACHE_NAME = 'smart-frame-v14';
 const STATIC_ASSETS = [
   '/',
   '/settings',
