@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Smart Frame Kiosk
+Comment=Apre lo Smart Frame a schermo intero all'avvio
+Exec=/home/pi/smart-frame/deploy/kiosk.sh
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,25 @@
+{
+  "name": "smart-frame",
+  "version": "1.0.0",
+  "description": "Smart Digital Frame & Calendar: slideshow a schermo intero con orologio, meteo e Google Calendar per Raspberry Pi + TV",
+  "type": "module",
+  "main": "server/server.js",
+  "private": true,
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "icons": "node scripts/make-icons.js"
+  },
+  "dependencies": {
+    "@googleapis/calendar": "^9.8.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.5"
+  },
+  "license": "MIT"
+}

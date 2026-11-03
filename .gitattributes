@@ -1,0 +1,4 @@
+# Gli script shell devono avere fine riga LF per girare sul Raspberry Pi
+*.sh text eol=lf
+*.service text eol=lf
+*.desktop text eol=lf

@@ -1,0 +1,728 @@
+/* =====================================================================
+   Smart Frame - Layout con Casa in Alto a Destra e Avvisi in Alto a Sinistra
+   ===================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --fade: 2.5s;
+  --panel-bg: rgba(14, 18, 26, 0.48);
+  --panel-border: rgba(255, 255, 255, 0.15);
+  --text: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.72);
+  --accent: #60a5fa;
+  --radius: 1.25rem;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: min(calc(100vw / 150), calc(100vh / 84));
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: none !important;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------ Slideshow */
+.slideshow {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--fade) ease-in-out;
+  overflow: hidden;
+}
+
+.slide.is-visible { opacity: 1; }
+
+.slide__single {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.slide__mosaic {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 1.2rem;
+  padding: 0.8rem;
+  background: #000;
+}
+
+.slide__mosaic-item {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,0.6);
+}
+
+.slide__mosaic-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.15) 30%, transparent 50%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, transparent 25%);
+}
+
+.empty-hint {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.empty-hint-card {
+  background: var(--panel-bg);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 2.2rem 2.8rem;
+  max-width: 38rem;
+  text-align: center;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2rem);
+  -webkit-backdrop-filter: blur(2rem);
+  animation: fadeIn 0.4s ease;
+}
+
+.empty-hint-icon {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.empty-hint-card h3 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.7rem;
+}
+
+.empty-hint-card p {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.empty-hint-card b {
+  color: #93c5fd;
+}
+
+/* ------------------------------------------- 1. Avvisi in Alto a Sinistra & Reolink */
+.top-left-container {
+  position: fixed;
+  top: 2rem;
+  left: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  z-index: 10;
+  pointer-events: auto;
+  transition: opacity 0.6s ease;
+}
+
+.top-left-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.reolink-pip {
+  width: 18rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(1.5rem);
+  -webkit-backdrop-filter: blur(1.5rem);
+  transition: transform 0.25s ease, opacity 0.4s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.reolink-pip:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.reolink-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.7rem;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 0.82rem;
+}
+
+.reolink-badge {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  animation: pulse 2s infinite;
+}
+
+.reolink-title {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.reolink-expand-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+
+.reolink-view {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reolink-view img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Modal full screen per Reolink */
+.reolink-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2rem);
+  -webkit-backdrop-filter: blur(2rem);
+  animation: fadeIn 0.3s ease;
+}
+
+.reolink-modal img {
+  max-width: 94vw;
+  max-height: 90vh;
+  border-radius: 0.8rem;
+  box-shadow: 0 2rem 5rem rgba(0,0,0,0.8);
+  object-fit: contain;
+}
+
+.reolink-close-btn {
+  position: absolute;
+  top: 2rem;
+  right: 3rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reolink-close-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+/* Popup Elegante Commenti e Didascalie Foto */
+.photo-comment-popup {
+  position: fixed;
+  bottom: 4.8rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0.8rem);
+  z-index: 9;
+  max-width: min(88vw, 36rem);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.6s;
+}
+
+.photo-comment-popup.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.comment-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.55), 0 0 1.2rem rgba(96, 165, 250, 0.2);
+  border-radius: 1.4rem;
+  padding: 0.75rem 1.25rem;
+  backdrop-filter: blur(2rem);
+  -webkit-backdrop-filter: blur(2rem);
+}
+
+.comment-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  filter: drop-shadow(0 0.2rem 0.4rem rgba(0, 0, 0, 0.4));
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.comment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.comment-author {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.03em;
+  text-transform: capitalize;
+}
+
+.comment-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #f8fafc;
+  word-break: break-word;
+  font-style: italic;
+}
+
+/* Didascalia foto in sovrimpressione */
+.photo-caption {
+  position: fixed;
+  bottom: 1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: rgba(10, 14, 23, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2rem;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(1.5rem);
+  -webkit-backdrop-filter: blur(1.5rem);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.memory-badge {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0.2rem 0.8rem rgba(245, 158, 11, 0.4);
+}
+
+.pinterest-badge {
+  background: #e60023;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0.2rem 0.8rem rgba(230, 0, 35, 0.4);
+}
+
+.ha-alert-item {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #fef08a;
+  background: rgba(20, 16, 5, 0.65);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  border-radius: 0.85rem;
+  padding: 0.45rem 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 0.8rem 2.5rem rgba(0,0,0,0.4);
+  backdrop-filter: blur(1.5rem);
+  -webkit-backdrop-filter: blur(1.5rem);
+  animation: fadeIn 0.4s ease;
+}
+
+/* ------------------------------------------- 2. Pannello Casa in Alto a Destra */
+.panel--top-home {
+  position: fixed;
+  top: 2rem;
+  right: 2.8rem;
+  width: 31rem;
+  z-index: 10;
+  pointer-events: auto;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.4rem;
+  box-shadow: 0 1.2rem 3.5rem rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1.8rem) saturate(160%);
+  -webkit-backdrop-filter: blur(1.8rem) saturate(160%);
+  transition: opacity 0.6s ease;
+}
+
+.ha-header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.panel__header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ha-presence {
+  font-size: 0.95rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.music-pill {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.7rem;
+  border-radius: 2rem;
+  background: rgba(96, 165, 250, 0.18);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  color: #93c5fd;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.music-pill.is-muted {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-dim);
+  opacity: 0.8;
+}
+
+.ha-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 0.8rem;
+}
+
+.ha-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ha-item--full {
+  grid-column: span 2;
+}
+
+.ha-item__label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ha-item__val {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------------------- 3. Overlay in Basso (Orologio + Calendario) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  padding: 2.2rem 2.8rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2.5rem;
+  pointer-events: none;
+  transition: transform 3s ease-in-out, opacity 0.6s ease;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1.2rem 3.5rem rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(1.8rem) saturate(160%);
+  -webkit-backdrop-filter: blur(1.8rem) saturate(160%);
+  pointer-events: auto;
+}
+
+/* In basso a sinistra: orologio */
+.panel--clock {
+  max-width: 32rem;
+  padding: 1.4rem 1.8rem;
+}
+
+.clock {
+  display: flex;
+  align-items: baseline;
+  line-height: 0.95;
+}
+
+.clock__time {
+  font-size: 5rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock__seconds {
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 0.5rem;
+}
+
+.clock__date {
+  margin-top: 0.4rem;
+  font-size: 1.45rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: capitalize;
+}
+
+.weather {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--panel-border);
+}
+
+.weather__icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-right: 1rem;
+}
+
+.weather__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.weather__temp {
+  font-size: 2.3rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.weather__desc {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+}
+
+.weather__meta {
+  margin-top: 0.6rem;
+  font-size: 1.05rem;
+  color: var(--text-dim);
+}
+
+.forecast {
+  list-style: none;
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.forecast li {
+  flex: 1;
+  text-align: center;
+  padding: 0.45rem 0.35rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 1rem;
+}
+.forecast .f-day { color: var(--text-dim); font-weight: 600; text-transform: capitalize; font-size: 0.95rem; }
+.forecast .f-icon { font-size: 1.45rem; margin: 0.15rem 0; }
+.forecast .f-temp { font-weight: 500; }
+.forecast .f-min { color: var(--text-dim); font-weight: 400; }
+
+/* In basso a destra: Calendario */
+.panel--events {
+  min-width: 25rem;
+  max-width: 31rem;
+  max-height: 48vh;
+  padding: 1.3rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel__status {
+  font-size: 0.95rem;
+  color: #fcd34d;
+}
+
+.events {
+  list-style: none;
+  overflow: hidden;
+}
+
+.events__empty {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  padding: 0.3rem 0;
+  line-height: 1.4;
+}
+
+.events__day {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0.8rem 0 0.3rem;
+  letter-spacing: 0.04em;
+}
+
+.event {
+  display: flex;
+  align-items: stretch;
+  padding: 0.4rem 0;
+  gap: 0.7rem;
+}
+
+.event__time {
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 5rem;
+}
+
+.event__bar {
+  width: 0.25rem;
+  border-radius: 0.2rem;
+  background: var(--event-color, var(--accent));
+}
+
+.event__body { min-width: 0; }
+
+.event__title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event__meta {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+}
+
+.event.is-holiday .event__title {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------- Indicatori */
+.badge {
+  position: fixed;
+  top: 1.8rem;
+  left: 2.2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.7rem;
+  font-size: 1.15rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+.badge--offline { color: #fcd34d; }
+.badge--pause { color: var(--text); }
+
+.toast {
+  position: fixed;
+  top: 1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.7rem;
+  font-size: 1.2rem;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[hidden] { display: none !important; }
+
+.dimmer {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 60s linear;
+  z-index: 100;
+}

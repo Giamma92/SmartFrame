@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Smart Frame - Impostazioni</title>
+
+  <!-- PWA & Apple iOS Support (iPhone 13 Pro) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Smart Frame">
+  <meta name="theme-color" content="#0b0f19">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #151c2c;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #3b82f6;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding-top: max(1.4rem, calc(env(safe-area-inset-top) + 0.8rem));
+      padding-bottom: max(3.5rem, calc(1.5rem + env(safe-area-inset-bottom)));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 1.3rem 0 0.7rem;
+    }
+    .theme-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+    .theme-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 0.9rem;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      gap: 0.6rem;
+    }
+    .theme-card.is-active {
+      border-color: var(--accent);
+      background: rgba(59, 130, 246, 0.14);
+    }
+    .theme-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      min-width: 0;
+      flex: 1;
+    }
+    .theme-icon { font-size: 1.7rem; flex-shrink: 0; }
+    .theme-name { font-size: 1.05rem; font-weight: 600; word-break: break-word; }
+    .theme-radio { font-size: 0.82rem; color: var(--text-dim); margin-top: 0.15rem; word-break: break-word; }
+    .badge-active {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 2rem;
+      display: none;
+      flex-shrink: 0;
+    }
+    .theme-card.is-active .badge-active { display: inline-block; }
+    
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      padding: 1.1rem;
+      margin-top: 0.8rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-dim);
+    }
+    input[type="text"], select {
+      width: 100%;
+      background: #0b0f19;
+      border: 1px solid var(--border);
+      border-radius: 0.6rem;
+      padding: 0.7rem 0.85rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.92rem;
+    }
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    select option {
+      background: #151c2c;
+      color: #fff;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info h4 { font-size: 0.95rem; font-weight: 600; }
+    .toggle-info p { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.15rem; }
+    input[type="checkbox"] {
+      width: 1.35rem;
+      height: 1.35rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 0.45rem;
+      border-radius: 0.3rem;
+      background: #1e293b;
+      margin: 0.5rem 0;
+    }
+    .volume-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .add-station-box {
+      border-top: 1px dashed var(--border);
+      padding-top: 0.9rem;
+      margin-top: 0.9rem;
+    }
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 0.6rem;
+      padding: 0.85rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.1rem;
+      transition: opacity 0.2s;
+    }
+    .btn--secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      padding: 0.6rem;
+      margin-top: 0.6rem;
+    }
+    .btn:active { opacity: 0.85; }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #fff;
+      padding: 0.65rem 1.4rem;
+      border-radius: 2rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.5);
+      display: none;
+      z-index: 100;
+    }
+    .footer-link {
+      text-align: center;
+      margin-top: 1.8rem;
+    }
+    .footer-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.88rem;
+    }
+    .emoji-chip {
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.4rem;
+      background: rgba(255, 255, 255, 0.06);
+      transition: background 0.15s;
+    }
+    .emoji-chip:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .saved-album-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.85rem 0.95rem;
+      transition: all 0.15s ease;
+    }
+    .saved-album-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .saved-album-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      width: 100%;
+    }
+    .saved-album-icon {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .saved-album-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .saved-album-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .saved-album-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
+      text-decoration: none;
+      max-width: 100%;
+      word-break: break-all;
+    }
+    .saved-album-link:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .saved-album-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .album-sync-btn {
+      background: rgba(59, 130, 246, 0.14);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      touch-action: manipulation;
+      transition: background 0.15s;
+    }
+    .album-sync-btn:active {
+      background: rgba(59, 130, 246, 0.3);
+    }
+    .album-del-btn {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      touch-action: manipulation;
+      transition: background 0.15s;
+    }
+    .album-del-btn:hover {
+      background: rgba(239, 68, 68, 0.28);
+    }
+    .album-del-btn:active {
+      background: rgba(239, 68, 68, 0.38);
+    }
+  </style>
+</head>
+<body>
+  <h1>⚙️ Smart Frame</h1>
+  <p class="subtitle">Gestisci profili, album e visibilità interfaccia con refresh immediato sulla TV.</p>
+
+  <!-- 1. SELEZIONA MODALITÀ -->
+  <div class="section-title">1. Seleziona Modalità</div>
+  <div class="theme-grid" id="theme-list"></div>
+
+  <button class="btn btn--secondary" type="button" onclick="openNewThemeDialog()" style="margin-top: 0.6rem; border: 1px dashed var(--accent); color: var(--accent); background: rgba(59, 130, 246, 0.08);">
+    ➕ Crea Nuova Modalità Personalizzata
+  </button>
+
+  <div id="new-theme-panel" class="card" style="display: none; margin-top: 0.7rem; border-color: var(--accent);">
+    <h4 style="margin: 0 0 0.8rem; color: var(--accent); font-size: 1rem;">✨ Crea una Nuova Modalità</h4>
+    <div class="form-group">
+      <label>Nome Modalità:</label>
+      <input type="text" id="new-theme-name" placeholder="Es. Compleanno, Relax Mare, Studio..." />
+    </div>
+    <div class="form-group">
+      <label>Icona Emoji:</label>
+      <div style="display: flex; gap: 0.45rem; align-items: center;">
+        <input type="text" id="new-theme-icon" value="✨" style="width: 3.5rem; text-align: center; font-size: 1.3rem;" />
+        <div class="emoji-suggestions" style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🎂')">🎂</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🏖️')">🏖️</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🕯️')">🕯️</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🎨')">🎨</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🍂')">🍂</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('☕')">☕</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🌸')">🌸</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🚗')">🚗</span>
+          <span class="emoji-chip" onclick="setNewThemeEmoji('🏡')">🏡</span>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
+      <button class="btn" type="button" onclick="createNewTheme()" style="margin-top: 0;">Crea e Configura</button>
+      <button class="btn btn--secondary" type="button" onclick="closeNewThemeDialog()" style="margin-top: 0;">Annulla</button>
+    </div>
+  </div>
+
+  <!-- 2. I MIEI ALBUM FOTO (LIBRERIA CONDIVISA) -->
+  <div class="section-title">2. Libreria Album Foto Google</div>
+  <div class="card">
+    <p style="color:var(--text-dim); font-size:0.86rem; margin-bottom:0.85rem; line-height:1.45;">
+      Salva qui i tuoi album Google Foto condivisi (es. Famiglia, Vacanze, Ricordi). Gli album salvati saranno selezionabili in qualsiasi modalità e <b>scansionati tutti insieme nella modalità Accadde Oggi</b>!
+    </p>
+
+    <div id="saved-albums-container" style="display:flex; flex-direction:column; gap:0.55rem; margin-bottom:1rem;">
+      <!-- Popolato dinamicamente da renderSavedAlbumsList() -->
+    </div>
+
+    <div class="add-album-box" style="border-top: 1px dashed var(--border); padding-top: 0.9rem;">
+      <label style="color:var(--accent); font-weight:600; display:block; margin-bottom:0.5rem; font-size:0.9rem;">➕ Aggiungi un Album alla Libreria:</label>
+      <input type="text" id="new-album-url" placeholder="Incolla link Google Photos (https://...)" oninput="onNewAlbumUrlInput()" onkeydown="if(event.key==='Enter')addNewSavedAlbum()" style="margin-bottom:0.5rem;" />
+      <div style="position:relative; margin-bottom:0.5rem;">
+        <input type="text" id="new-album-name" placeholder="Nome album (opzionale, rilevato in auto)" onkeydown="if(event.key==='Enter')addNewSavedAlbum()" style="padding-right: 2.2rem;" />
+        <span id="album-title-spinner" style="position:absolute; right:0.75rem; top:0.75rem; display:none; font-size:0.95rem;">⏳</span>
+      </div>
+      <small style="color:var(--text-dim); font-size:0.76rem; display:block; margin-bottom:0.8rem; line-height:1.4;">
+        💡 Incolla il link condiviso: <b>il nome vero dell'album viene estratto automaticamente da Google Foto</b> se non lo specifichi!
+      </small>
+      <button class="btn btn--secondary" type="button" id="add-album-btn" onclick="addNewSavedAlbum()" style="margin-top:0;">Salva Album nella Libreria</button>
+    </div>
+  </div>
+
+  <!-- 3. PERSONALIZZA TEMA -->
+  <div class="section-title">3. Personalizza Modalità Selezionata</div>
+  <div class="card">
+    <div id="album-warning" style="display: none; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 0.6rem; padding: 0.65rem 0.85rem; margin-bottom: 0.85rem; font-size: 0.86rem; color: #fef08a;">
+      ⚠️ <b>Nessuna sorgente foto impostata:</b> inserisci un album Google Photos o una bacheca Pinterest per mostrare le foto di questo tema sulla TV.
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.9rem;">
+      <div style="width: 4.2rem;">
+        <label>Icona:</label>
+        <input type="text" id="theme-edit-icon" style="text-align: center; font-size: 1.3rem;" />
+      </div>
+      <div style="flex: 1;">
+        <label>Nome Modalità:</label>
+        <input type="text" id="theme-edit-name" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Modalità Visualizzazione Foto:</label>
+      <select id="slideshow-filter-select" onchange="onSlideshowFilterChange()">
+        <option value="all">📸 Tutte le foto (Casuale & Shuffle)</option>
+        <option value="today_memories">✨ Accadde Oggi (Ricordi di questo periodo negli anni passati)</option>
+      </select>
+      <small style="color:var(--text-dim); font-size:0.75rem; display:block; margin-top:0.25rem;">La modalità <b>Accadde Oggi</b> cerca tra le foto scattate oggi o in questi giorni negli anni passati.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Origine Immagini Slideshow:</label>
+      <select id="photo-source-select" onchange="updatePhotoSourceVisibility()">
+        <option value="mix">🔀 Mix (Google Photos + Pinterest)</option>
+        <option value="google">📸 Solo Google Photos</option>
+        <option value="pinterest">📌 Solo Pinterest</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="google-photos-group">
+      <label>Album Google Photos per questa Modalità:</label>
+      <select id="saved-albums-select" onchange="onSelectSavedAlbum(this.value)" style="margin-bottom:0.45rem;"></select>
+
+      <div id="accadde-oggi-info" style="display:none; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 0.6rem; padding: 0.65rem 0.85rem; margin-bottom: 0.6rem; font-size: 0.82rem; color: #bfdbfe; line-height: 1.4;">
+        ✨ <b>Accadde Oggi attivo:</b> Smart Frame cerca automaticamente tra <b>tutti gli album salvati</b> nella tua Libreria per trovare le foto scattate in questi giorni negli anni passati!
+      </div>
+
+      <div id="custom-album-box" style="display:none; margin-top:0.35rem;">
+        <label style="font-size:0.8rem; color:var(--text-dim);">Link album diretto:</label>
+        <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.2rem;">
+          <input type="text" id="album-url" placeholder="https://photos.app.goo.gl/..." oninput="onAlbumUrlInput()" onkeydown="if(event.key==='Enter')addDirectAlbumToLibrary()" style="flex:1 1 200px; margin-bottom:0;" />
+          <button type="button" class="btn btn--secondary" onclick="addDirectAlbumToLibrary()" style="white-space:nowrap; flex:1 1 auto; margin-top:0; padding:0.6rem 0.85rem; font-size:0.82rem;">➕ Salva in Libreria</button>
+        </div>
+        <small style="color:var(--text-dim); font-size:0.75rem; display:block; margin-top:0.3rem;">
+          💡 Incolla il link: viene aggiunto automaticamente alla tua Libreria con il suo nome reale!
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group" id="pinterest-group">
+      <label>Link Bacheca o Profilo Pinterest:</label>
+      <input type="text" id="pinterest-url" placeholder="https://www.pinterest.com/utente/bacheca" />
+      <small style="color:var(--text-dim); font-size:0.75rem; display:block; margin-top:0.25rem;">Supporta link bacheca, profilo utente, pin.it o feed RSS.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Stazione Web Radio:</label>
+      <select id="radio-select"></select>
+    </div>
+
+    <!-- Modulo per aggiungere nuova stazione -->
+    <div class="add-station-box">
+      <label style="color:var(--accent);">➕ Aggiungi una Nuova Stazione Radio:</label>
+      <input type="text" id="new-radio-name" placeholder="Es. Virgin Radio Rock" style="margin-bottom:0.4rem;" />
+      <input type="text" id="new-radio-url" placeholder="https://stream-url.mp3" />
+      <button class="btn btn--secondary" type="button" id="add-radio-btn">Aggiungi alla lista</button>
+    </div>
+
+    <!-- Visibilità elementi specifica per questa modalità -->
+    <div style="border-top: 1px dashed var(--border); padding-top: 0.9rem; margin-top: 0.9rem;">
+      <label style="font-weight: 600; margin-bottom: 0.4rem; display: block; color: var(--text);">Elementi Visibili per questa Modalità:</label>
+      <div style="display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.4rem;">
+        <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; font-size: 0.88rem; color: var(--text);">
+          <input type="checkbox" id="theme-calendar-toggle" checked style="width: 1.15rem; height: 1.15rem; accent-color: var(--accent);" />
+          <span>📅 <b>Calendario Google:</b> eventi e festività in basso a destra</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; font-size: 0.88rem; color: var(--text);">
+          <input type="checkbox" id="theme-alerts-toggle" checked style="width: 1.15rem; height: 1.15rem; accent-color: var(--accent);" />
+          <span>⚠️ <b>Avvisi Casa:</b> CO2, polveri PM2.5 e batterie in alto a sinistra</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; font-size: 0.88rem; color: var(--text);">
+          <input type="checkbox" id="theme-popups-toggle" checked style="width: 1.15rem; height: 1.15rem; accent-color: var(--accent);" />
+          <span>💬 <b>Notifiche Pop-up:</b> lavatrice/asciugatrice e accensione luci</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; font-size: 0.88rem; color: var(--text);">
+          <input type="checkbox" id="theme-photo-comments-toggle" checked style="width: 1.15rem; height: 1.15rem; accent-color: var(--accent);" />
+          <span>🗨️ <b>Commenti & Didascalie Foto:</b> fumetto popup con annotazioni personali</span>
+        </label>
+      </div>
+    </div>
+
+    <button type="button" id="delete-theme-btn" class="btn" onclick="deleteActiveTheme()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; margin-top: 1.2rem; display: none;">
+      🗑️ Elimina Questa Modalità
+    </button>
+  </div>
+
+  <!-- 4. VISIBILITÀ INTERFACCIA -->
+  <div class="section-title">4. Visibilità Informazioni (UI sulla TV)</div>
+  <div class="theme-grid" id="ui-mode-list">
+    <div class="theme-card" id="ui-mode-always" onclick="selectUiMode('always')">
+      <div class="theme-info">
+        <span class="theme-icon">📌</span>
+        <div>
+          <div class="theme-name">Sempre Visibile</div>
+          <div class="theme-radio">Predefinito: orologio, meteo, calendario e casa sempre attivi</div>
+        </div>
+      </div>
+      <span class="badge-active">ATTIVO</span>
+    </div>
+
+    <div class="theme-card" id="ui-mode-hidden" onclick="selectUiMode('hidden')">
+      <div class="theme-info">
+        <span class="theme-icon">🖼️</span>
+        <div>
+          <div class="theme-name">Senza UI (Solo Foto)</div>
+          <div class="theme-radio">Schermo pulito a tutto schermo, solo immagini</div>
+        </div>
+      </div>
+      <span class="badge-active">ATTIVO</span>
+    </div>
+
+    <div class="theme-card" id="ui-mode-autohide" onclick="selectUiMode('autohide')">
+      <div class="theme-info">
+        <span class="theme-icon">⏱️</span>
+        <div>
+          <div class="theme-name">Nascondi con Timer</div>
+          <div class="theme-radio">Scompare per inattività e riappare premendo un tasto</div>
+        </div>
+      </div>
+      <span class="badge-active">ATTIVO</span>
+    </div>
+  </div>
+
+  <div id="autohide-settings" class="card" style="display: none; margin-top: 0.7rem;">
+    <div class="form-group" style="margin-bottom: 0;">
+      <label>Secondi di inattività prima di nascondere:</label>
+      <select id="ui-timeout-select">
+        <option value="10">10 secondi</option>
+        <option value="15">15 secondi (consigliato)</option>
+        <option value="30">30 secondi</option>
+        <option value="60">1 minuto</option>
+        <option value="120">2 minuti</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 5. SLIDESHOW & AUDIO -->
+  <div class="section-title">5. Slideshow & Audio</div>
+  <div class="card">
+    <div class="form-group">
+      <label>Effetto Movimento Foto (Ken Burns):</label>
+      <select id="motion-effect-select">
+        <option value="cinematic" selected>🎬 Dinamico & Cinematico (Consigliato - Zoom & Pan)</option>
+        <option value="vibrant">🌊 Molto Dinamico (Movimento più evidente ed energico)</option>
+        <option value="gentle">🧘 Morbido & Rilassante (Movimento ultra-lento)</option>
+        <option value="none">🛑 Statico (Foto fissa, nessun movimento)</option>
+      </select>
+      <small style="color:var(--text-dim); font-size:0.75rem; display:block; margin-top:0.25rem;">
+        Anima le foto con movimenti di camera fluidi (zoom in/out, pan diagonali e floating) per dare vita allo schermo.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Velocità Slideshow (Secondi per foto):</label>
+      <select id="slide-interval-select">
+        <option value="10">10 secondi (rapido)</option>
+        <option value="15">15 secondi</option>
+        <option value="30">30 secondi</option>
+        <option value="45">45 secondi</option>
+        <option value="60" selected>60 secondi (1 minuto - consigliato)</option>
+        <option value="120">2 minuti</option>
+        <option value="300">5 minuti</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0.3rem;">
+      <div class="volume-header">
+        <label>Volume Streaming Radio:</label>
+        <span id="volume-val">50%</span>
+      </div>
+      <input type="range" id="volume-slider" min="0" max="100" value="50" />
+    </div>
+  </div>
+
+  <!-- 6. ELEMENTI A SCHERMO & SMART HOME -->
+  <div class="section-title">6. Elementi a Schermo & Smart Home</div>
+  <div class="card">
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>📅 Calendario Google</h4>
+        <p>Mostra il riquadro degli eventi in programma e festività in basso a destra</p>
+      </div>
+      <input type="checkbox" id="calendar-toggle" checked />
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>⚠️ Avvisi Casa (In alto a sinistra)</h4>
+        <p>Mostra avvisi aria viziata (CO2), PM2.5 elevato o batterie sensori basse</p>
+      </div>
+      <input type="checkbox" id="alerts-toggle" checked />
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>💬 Notifiche Pop-up</h4>
+        <p>Mostra avvisi temporanei quando finisce la lavatrice/asciugatrice o si accendono le luci</p>
+      </div>
+      <input type="checkbox" id="popups-toggle" checked />
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>🗨️ Popup Commenti & Didascalie Foto</h4>
+        <p>Mostra un fumetto popup elegante quando una foto contiene commenti o didascalie personali</p>
+      </div>
+      <input type="checkbox" id="photo-comments-toggle" checked />
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>📹 Telecamera Reolink (PiP)</h4>
+        <p>Mostra anteprima video sotto gli avvisi quando la telecamera è attiva</p>
+      </div>
+      <input type="checkbox" id="reolink-toggle" checked />
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>🌙 Modalità Notturna Intelligente</h4>
+        <p>Oscura lo schermo quando tutte le luci sono spente o la stanza è al buio</p>
+      </div>
+      <input type="checkbox" id="night-dim-toggle" checked />
+    </div>
+
+    <button class="btn" id="save-btn" style="margin-top: 1.3rem;">⚡ Salva e Aggiorna TV Subito</button>
+  </div>
+
+  <div class="footer-link">
+    <a href="/?frame=1">← Apri Smart Frame (Cornice Foto)</a>
+  </div>
+
+  <div id="toast" class="toast">⚡ Modifiche salvate e TV aggiornata!</div>
+
+  <script>
+    let settings = {};
+    let selectedUiMode = 'always';
+
+    async function load() {
+      const res = await fetch('/api/settings');
+      settings = await res.json();
+      selectedUiMode = settings.uiMode || 'always';
+      renderRadioSelect();
+      renderSavedAlbumsList();
+      renderSavedAlbumsSelect();
+      renderThemes();
+      renderUiMode();
+      populateForm();
+    }
+
+    function renderRadioSelect() {
+      const sel = document.getElementById('radio-select');
+      sel.innerHTML = '';
+      (settings.radioStations || []).forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st.id;
+        opt.textContent = st.name;
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderSavedAlbumsList() {
+      const container = document.getElementById('saved-albums-container');
+      if (!container) return;
+      container.innerHTML = '';
+      const albums = settings.savedAlbums || [];
+      if (albums.length === 0) {
+        container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-dim); font-style:italic; padding:0.5rem 0;">Nessun album salvato. Aggiungi il tuo primo album qui sotto!</div>';
+        return;
+      }
+      albums.forEach((alb, idx) => {
+        const item = document.createElement('div');
+        item.className = 'saved-album-card';
+        const displayUrl = alb.url ? alb.url.replace(/^https?:\/\//, '') : 'Nessun link';
+        item.innerHTML = `
+          <div class="saved-album-header">
+            <span class="saved-album-icon">📁</span>
+            <div class="saved-album-info">
+              <div class="saved-album-title">${alb.name || 'Album Senza Nome'}</div>
+              ${alb.url ? `
+                <a class="saved-album-link" href="${alb.url}" target="_blank" rel="noopener" title="${alb.url}">
+                  <span>🔗</span>
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%;">${displayUrl}</span>
+                </a>
+              ` : '<div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.25rem;">Nessun link</div>'}
+            </div>
+          </div>
+          <div class="saved-album-actions">
+            ${alb.url ? `
+              <button class="album-sync-btn" type="button" onclick="syncRealAlbumTitle(${idx})" title="Rileva nome originale da Google Foto">
+                <span>🔄</span> Sincronizza Nome
+              </button>
+            ` : ''}
+            <button class="album-del-btn" type="button" onclick="deleteSavedAlbum(${idx})" title="Rimuovi album dalla libreria">
+              <span>🗑️</span> Rimuovi
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async function syncRealAlbumTitle(index) {
+      if (!settings.savedAlbums || !settings.savedAlbums[index]) return;
+      const alb = settings.savedAlbums[index];
+      if (!alb.url) return;
+      try {
+        const res = await fetch('/api/album-info?url=' + encodeURIComponent(alb.url));
+        const data = await res.json();
+        if (data && data.title) {
+          alb.name = data.title;
+          renderSavedAlbumsList();
+          renderSavedAlbumsSelect();
+          syncSavedAlbumSelect();
+          await save(true);
+          alert('Nome aggiornato dal vero titolo Google Foto: "' + data.title + '"');
+        } else {
+          alert('Impossibile rilevare il titolo automaticamente per questo link.');
+        }
+      } catch (err) {
+        alert('Errore durante la connessione: ' + err.message);
+      }
+    }
+
+    let albumDetectTimer = null;
+    function onNewAlbumUrlInput() {
+      const urlInput = document.getElementById('new-album-url');
+      const nameInput = document.getElementById('new-album-name');
+      const spinner = document.getElementById('album-title-spinner');
+      if (!urlInput || !nameInput) return;
+      const url = urlInput.value.trim();
+
+      clearTimeout(albumDetectTimer);
+      if (url.startsWith('http') && (!nameInput.value.trim() || nameInput.getAttribute('data-autofilled') === 'true')) {
+        if (spinner) spinner.style.display = 'inline';
+        albumDetectTimer = setTimeout(async () => {
+          try {
+            const res = await fetch('/api/album-info?url=' + encodeURIComponent(url));
+            const data = await res.json();
+            if (data && data.title) {
+              nameInput.value = data.title;
+              nameInput.setAttribute('data-autofilled', 'true');
+            }
+          } catch {}
+          if (spinner) spinner.style.display = 'none';
+        }, 300);
+      }
+    }
+
+    function renderSavedAlbumsSelect() {
+      const sel = document.getElementById('saved-albums-select');
+      if (!sel) return;
+      sel.innerHTML = '';
+
+      // Opzione 1: Tutti gli album salvati (ideale per Accadde Oggi e Shuffle completo)
+      const optAll = document.createElement('option');
+      optAll.value = 'all_saved';
+      optAll.textContent = '🌟 Tutti i miei album salvati (Consigliato per Ricordi)';
+      sel.appendChild(optAll);
+
+      // Opzioni per album individuali salvati nella libreria
+      const albums = settings.savedAlbums || [];
+      albums.forEach(alb => {
+        if (!alb.url && !alb.name) return;
+        const opt = document.createElement('option');
+        opt.value = alb.url || '';
+        opt.textContent = '📁 ' + alb.name;
+        sel.appendChild(opt);
+      });
+
+      // Opzione inserimento manuale
+      const optCustom = document.createElement('option');
+      optCustom.value = '__custom__';
+      optCustom.textContent = '🔗 Inserisci un altro link diretto...';
+      sel.appendChild(optCustom);
+    }
+
+    function syncSavedAlbumSelect() {
+      const sel = document.getElementById('saved-albums-select');
+      const customBox = document.getElementById('custom-album-box');
+      const input = document.getElementById('album-url');
+      const active = settings.themes[settings.activeTheme];
+      if (!sel || !active) return;
+
+      const currentUrl = (active.albumUrl || (active.id === 'standard' ? 'all_saved' : '')).trim();
+
+      if (!currentUrl || currentUrl === 'all_saved') {
+        sel.value = 'all_saved';
+        if (customBox) customBox.style.display = 'none';
+        if (input) input.value = '';
+        return;
+      }
+
+      let found = false;
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value && sel.options[i].value === currentUrl) {
+          sel.selectedIndex = i;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        sel.value = '__custom__';
+        if (customBox) customBox.style.display = 'block';
+        if (input) input.value = currentUrl;
+      } else {
+        if (customBox) customBox.style.display = 'none';
+      }
+    }
+
+    function onSelectSavedAlbum(val) {
+      const customBox = document.getElementById('custom-album-box');
+      const input = document.getElementById('album-url');
+      const active = settings.themes[settings.activeTheme];
+      if (!active) return;
+
+      if (val === '__custom__') {
+        if (customBox) customBox.style.display = 'block';
+        if (input) {
+          if (active.albumUrl && active.albumUrl !== 'all_saved') {
+            input.value = active.albumUrl;
+          } else {
+            input.value = '';
+          }
+          input.focus();
+        }
+      } else {
+        if (customBox) customBox.style.display = 'none';
+        active.albumUrl = val;
+        if (input) input.value = (val === 'all_saved' ? '' : val);
+      }
+      updateAlbumWarning();
+    }
+
+    let directAlbumTimer = null;
+    function onAlbumUrlInput() {
+      const input = document.getElementById('album-url');
+      const active = settings.themes[settings.activeTheme];
+      if (!input || !active) return;
+      const url = input.value.trim();
+      active.albumUrl = url;
+      updateAlbumWarning();
+
+      // Riconoscimento automatico: se è un link Google Photos valido, salvalo in libreria dopo 600ms
+      clearTimeout(directAlbumTimer);
+      if (url.startsWith('http') && (url.includes('photos.app.goo.gl') || url.includes('photos.google.com'))) {
+        directAlbumTimer = setTimeout(() => {
+          addDirectAlbumToLibrary(url);
+        }, 600);
+      }
+    }
+
+    async function addDirectAlbumToLibrary(forcedUrl) {
+      const input = document.getElementById('album-url');
+      const url = (forcedUrl || (input ? input.value : '')).trim();
+      if (!url || !url.startsWith('http')) return;
+
+      if (!settings.savedAlbums) settings.savedAlbums = [];
+
+      let alb = settings.savedAlbums.find(a => a.url === url);
+      if (!alb) {
+        alb = {
+          id: 'album_' + Date.now(),
+          name: '📁 Album Google Foto (Rilevamento...)',
+          url: url
+        };
+        settings.savedAlbums.push(alb);
+      }
+
+      const active = settings.themes[settings.activeTheme];
+      if (active) active.albumUrl = url;
+
+      // Aggiorna IMMEDIATAMENTE tutte le viste (0ms)
+      renderSavedAlbumsList();
+      renderSavedAlbumsSelect();
+      syncSavedAlbumSelect();
+      renderThemes();
+      showToast('✅ Album aggiunto alla Libreria!');
+      save(true);
+
+      // Rileva in background il titolo reale
+      try {
+        const res = await fetch('/api/album-info?url=' + encodeURIComponent(url));
+        const data = await res.json();
+        if (data && data.title) {
+          alb.name = data.title;
+          renderSavedAlbumsList();
+          renderSavedAlbumsSelect();
+          syncSavedAlbumSelect();
+          renderThemes();
+          save(true);
+          showToast('✅ Titolo album: ' + data.title);
+        }
+      } catch {}
+    }
+
+    function onSlideshowFilterChange() {
+      const filterSel = document.getElementById('slideshow-filter-select');
+      const infoBox = document.getElementById('accadde-oggi-info');
+      const albumSel = document.getElementById('saved-albums-select');
+      const active = settings.themes[settings.activeTheme];
+      const isToday = (filterSel && filterSel.value === 'today_memories');
+
+      if (infoBox) infoBox.style.display = isToday ? 'block' : 'none';
+      if (isToday) {
+        if (albumSel && (!active || !active.albumUrl || active.albumUrl === 'all_saved')) {
+          albumSel.value = 'all_saved';
+          onSelectSavedAlbum('all_saved');
+        }
+      }
+      if (active && filterSel) {
+        active.slideshowFilter = filterSel.value;
+      }
+    }
+
+    function updateAlbumWarning() {
+      const active = settings.themes[settings.activeTheme];
+      const warn = document.getElementById('album-warning');
+      if (!active || !warn) return;
+
+      const hasSavedWithUrl = (settings.savedAlbums || []).some(a => a.url && a.url.trim());
+      const hasG = (active.albumUrl === 'all_saved' || (!active.albumUrl && active.id === 'standard'))
+        ? hasSavedWithUrl
+        : Boolean(active.albumUrl);
+      const hasP = Boolean(active.pinterestUrl);
+      const pSrc = active.photoSource || 'mix';
+      let missing = false;
+      if (pSrc === 'pinterest') missing = !hasP;
+      else if (pSrc === 'google') missing = !hasG;
+      else missing = !hasG && !hasP;
+      warn.style.display = missing ? 'block' : 'none';
+    }
+
+    async function addNewSavedAlbum() {
+      const nameInput = document.getElementById('new-album-name');
+      const urlInput = document.getElementById('new-album-url');
+      let name = nameInput ? nameInput.value.trim() : '';
+      const url = urlInput ? urlInput.value.trim() : '';
+
+      if (!url || !url.startsWith('http')) {
+        showToast('⚠️ Inserisci un link valido (https://photos.app.goo.gl/...)');
+        return;
+      }
+
+      if (!settings.savedAlbums) settings.savedAlbums = [];
+
+      // Evita duplicati dello stesso URL
+      let existing = settings.savedAlbums.find(a => a.url === url);
+      if (existing) {
+        if (name && name !== existing.name) existing.name = name;
+        renderSavedAlbumsList();
+        renderSavedAlbumsSelect();
+        const active = settings.themes[settings.activeTheme];
+        if (active) active.albumUrl = url;
+        syncSavedAlbumSelect();
+        renderThemes();
+        showToast('📁 Album già presente, selezionato!');
+        save(true);
+        if (nameInput) nameInput.value = '';
+        if (urlInput) urlInput.value = '';
+        return;
+      }
+
+      // Crea e aggiungi subito l'album (0ms attesa!)
+      const tempName = name || '📁 Album Google Foto (Rilevamento...)';
+      const newAlbum = {
+        id: 'album_' + Date.now(),
+        name: tempName,
+        url: url
+      };
+      settings.savedAlbums.push(newAlbum);
+
+      // Pulisci subito i campi e aggiorna le liste in tempo reale!
+      if (nameInput) {
+        nameInput.value = '';
+        nameInput.removeAttribute('data-autofilled');
+      }
+      if (urlInput) urlInput.value = '';
+
+      renderSavedAlbumsList();
+      renderSavedAlbumsSelect();
+
+      // Seleziona il nuovo album per la modalità attiva se desiderato
+      const active = settings.themes[settings.activeTheme];
+      if (active) {
+        active.albumUrl = url;
+      }
+      syncSavedAlbumSelect();
+      renderThemes();
+
+      showToast('✅ Album aggiunto alla Libreria!');
+      save(true);
+
+      // Se il nome non è stato specificato o è temporaneo, rileva il vero titolo in background
+      if (!name || tempName.includes('...')) {
+        try {
+          const res = await fetch('/api/album-info?url=' + encodeURIComponent(url));
+          const data = await res.json();
+          if (data && data.title) {
+            newAlbum.name = data.title;
+            renderSavedAlbumsList();
+            renderSavedAlbumsSelect();
+            syncSavedAlbumSelect();
+            renderThemes();
+            save(true);
+            showToast('✅ Nome album: ' + data.title);
+          }
+        } catch {}
+      }
+    }
+
+    async function deleteSavedAlbum(index) {
+      if (!settings.savedAlbums || !settings.savedAlbums[index]) return;
+      const alb = settings.savedAlbums[index];
+      if (!confirm('Vuoi rimuovere l\'album "' + alb.name + '" dalla libreria?')) return;
+      settings.savedAlbums.splice(index, 1);
+      renderSavedAlbumsList();
+      renderSavedAlbumsSelect();
+      syncSavedAlbumSelect();
+      renderThemes();
+      await save(true);
+      showToast('🗑️ Album rimosso dalla libreria');
+    }
+
+    function updatePhotoSourceVisibility() {
+      const srcEl = document.getElementById('photo-source-select');
+      const src = srcEl ? srcEl.value : 'mix';
+      const gGroup = document.getElementById('google-photos-group');
+      const pGroup = document.getElementById('pinterest-group');
+      if (gGroup) gGroup.style.display = (src === 'pinterest') ? 'none' : 'block';
+      if (pGroup) pGroup.style.display = (src === 'google') ? 'none' : 'block';
+    }
+
+    function renderThemes() {
+      const list = document.getElementById('theme-list');
+      list.innerHTML = '';
+      const stations = settings.radioStations || [];
+      Object.values(settings.themes).forEach(t => {
+        const st = stations.find(s => s.id === t.radioStationId) || stations[0] || {};
+        const hasG = Boolean(t.albumUrl || (t.id === 'standard'));
+        const hasP = Boolean(t.pinterestUrl);
+        const pSource = t.photoSource || 'mix';
+        let isMissing = false;
+        if (pSource === 'pinterest') isMissing = !hasP;
+        else if (pSource === 'google') isMissing = !hasG && t.id !== 'standard';
+        else isMissing = !hasG && !hasP && t.id !== 'standard';
+
+        let sourceLabel = '';
+        if (pSource === 'pinterest') sourceLabel = '📌 Pinterest';
+        else if (pSource === 'google') sourceLabel = '📸 Google Photos';
+        else if (hasG && hasP) sourceLabel = '🔀 Mix Google + Pinterest';
+        else if (hasP) sourceLabel = '📌 Pinterest';
+        else sourceLabel = '📸 Google Photos';
+
+        const card = document.createElement('div');
+        card.className = 'theme-card' + (t.id === settings.activeTheme ? ' is-active' : '');
+        card.onclick = () => switchTheme(t.id);
+        card.innerHTML = `
+          <div class="theme-info">
+            <span class="theme-icon">${t.icon || '🖼️'}</span>
+            <div>
+              <div class="theme-name">${t.name}</div>
+              <div class="theme-radio">🎵 ${st.name || 'Nessuna'} · ${sourceLabel}</div>
+              ${isMissing ? '<div style="font-size:0.75rem; color:#fde047; margin-top:0.15rem;">⚠️ Manca sorgente foto</div>' : ''}
+            </div>
+          </div>
+          <span class="badge-active">ATTIVO</span>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function renderUiMode() {
+      const modes = ['always', 'hidden', 'autohide'];
+      modes.forEach(m => {
+        const card = document.getElementById('ui-mode-' + m);
+        if (card) {
+          if (m === selectedUiMode) card.classList.add('is-active');
+          else card.classList.remove('is-active');
+        }
+      });
+      const autoBox = document.getElementById('autohide-settings');
+      if (autoBox) {
+        autoBox.style.display = selectedUiMode === 'autohide' ? 'block' : 'none';
+      }
+      const toSel = document.getElementById('ui-timeout-select');
+      if (toSel && settings.uiTimeoutSec) {
+        toSel.value = String(settings.uiTimeoutSec);
+      }
+    }
+
+    function selectUiMode(mode) {
+      selectedUiMode = mode;
+      settings.uiMode = mode;
+      renderUiMode();
+      save(true);
+    }
+
+    function openNewThemeDialog() {
+      const panel = document.getElementById('new-theme-panel');
+      if (panel) {
+        panel.style.display = 'block';
+        const nameIn = document.getElementById('new-theme-name');
+        if (nameIn) nameIn.focus();
+      }
+    }
+
+    function closeNewThemeDialog() {
+      const panel = document.getElementById('new-theme-panel');
+      if (panel) panel.style.display = 'none';
+      const nameIn = document.getElementById('new-theme-name');
+      if (nameIn) nameIn.value = '';
+    }
+
+    function setNewThemeEmoji(emoji) {
+      const el = document.getElementById('new-theme-icon');
+      if (el) el.value = emoji;
+    }
+
+    async function createNewTheme() {
+      const name = document.getElementById('new-theme-name').value.trim();
+      const icon = document.getElementById('new-theme-icon').value.trim() || '✨';
+      if (!name) {
+        alert('Inserisci un nome per la nuova modalità');
+        return;
+      }
+      const newId = 'theme_' + Date.now();
+      if (!settings.themes) settings.themes = {};
+      settings.themes[newId] = {
+        id: newId,
+        name: name,
+        icon: icon,
+        isCustom: true,
+        photoSource: 'mix',
+        slideshowFilter: 'all',
+        showCalendar: true,
+        showAlerts: true,
+        showPopups: true,
+        albumUrl: '',
+        pinterestUrl: '',
+        radioStationId: 'lofi'
+      };
+      settings.activeTheme = newId;
+      closeNewThemeDialog();
+      renderThemes();
+      populateForm();
+      await save(true);
+      alert('Modalità "' + name + '" creata! Ora puoi impostare album, pinterest e musica qui sotto.');
+    }
+
+    async function deleteActiveTheme() {
+      const activeId = settings.activeTheme;
+      if (activeId === 'standard') {
+        alert('La modalità Standard è protetta e non può essere eliminata.');
+        return;
+      }
+      const active = settings.themes[activeId];
+      const name = active ? active.name : activeId;
+      if (!confirm('Sei sicuro di voler eliminare definitivamente la modalità "' + name + '"?')) return;
+
+      delete settings.themes[activeId];
+      settings.activeTheme = 'standard';
+      renderThemes();
+      populateForm();
+      await save(true);
+      alert('Modalità eliminata.');
+    }
+
+    function populateForm() {
+      const active = settings.themes[settings.activeTheme];
+      if (!active) return;
+      document.getElementById('theme-edit-name').value = active.name || '';
+      document.getElementById('theme-edit-icon').value = active.icon || '✨';
+      const delBtn = document.getElementById('delete-theme-btn');
+      if (delBtn) delBtn.style.display = (active.id === 'standard') ? 'none' : 'block';
+
+      document.getElementById('slideshow-filter-select').value = active.slideshowFilter || 'all';
+      onSlideshowFilterChange();
+      document.getElementById('photo-source-select').value = active.photoSource || 'mix';
+      document.getElementById('pinterest-url').value = active.pinterestUrl || '';
+      document.getElementById('radio-select').value = active.radioStationId || 'lofi';
+
+      // Elementi visibili specifici per la modalità
+      const themeCal = document.getElementById('theme-calendar-toggle');
+      if (themeCal) themeCal.checked = active.showCalendar !== false;
+      const themeAlerts = document.getElementById('theme-alerts-toggle');
+      if (themeAlerts) themeAlerts.checked = active.showAlerts !== false;
+      const themePopups = document.getElementById('theme-popups-toggle');
+      if (themePopups) themePopups.checked = active.showPopups !== false;
+      const themeComments = document.getElementById('theme-photo-comments-toggle');
+      if (themeComments) themeComments.checked = active.showPhotoComments !== false;
+
+      syncSavedAlbumSelect();
+      updatePhotoSourceVisibility();
+      updateAlbumWarning();
+
+      // 5. Slideshow & Audio
+      const motionSel = document.getElementById('motion-effect-select');
+      if (motionSel) {
+        motionSel.value = settings.motionEffect || 'cinematic';
+      }
+
+      const slideSel = document.getElementById('slide-interval-select');
+      if (slideSel && settings.slideIntervalSec) {
+        slideSel.value = String(settings.slideIntervalSec);
+      }
+      const volSlider = document.getElementById('volume-slider');
+      const volVal = document.getElementById('volume-val');
+      const volPct = Math.round((settings.audioVolume !== undefined ? settings.audioVolume : 0.5) * 100);
+      if (volSlider) volSlider.value = volPct;
+      if (volVal) volVal.textContent = volPct + '%';
+
+      // 5. Elementi a Schermo & Smart Home
+      const calToggle = document.getElementById('calendar-toggle');
+      if (calToggle) calToggle.checked = settings.showCalendar !== false;
+      const alertsToggle = document.getElementById('alerts-toggle');
+      if (alertsToggle) alertsToggle.checked = settings.showAlerts !== false;
+      const popupsToggle = document.getElementById('popups-toggle');
+      if (popupsToggle) popupsToggle.checked = settings.showPopups !== false;
+      const commentsToggle = document.getElementById('photo-comments-toggle');
+      if (commentsToggle) commentsToggle.checked = settings.showPhotoComments !== false;
+      const reolinkEl = document.getElementById('reolink-toggle');
+      if (reolinkEl) reolinkEl.checked = settings.reolinkEnabled !== false;
+      const nightEl = document.getElementById('night-dim-toggle');
+      if (nightEl) nightEl.checked = settings.smartNightDim !== false;
+    }
+
+    async function switchTheme(themeId) {
+      if (settings.activeTheme === themeId) return;
+      settings.activeTheme = themeId;
+      renderThemes();
+      populateForm();
+      await save(true);
+    }
+
+    // Aggiunta nuova stazione radio alla lista
+    document.getElementById('add-radio-btn').onclick = function () {
+      const name = document.getElementById('new-radio-name').value.trim();
+      const url = document.getElementById('new-radio-url').value.trim();
+      if (!name || !url) {
+        alert('Inserisci sia il nome che l\'URL streaming della stazione');
+        return;
+      }
+      const newId = 'custom_' + Date.now();
+      settings.radioStations.push({ id: newId, name: name, url: url });
+      renderRadioSelect();
+      document.getElementById('radio-select').value = newId;
+      document.getElementById('new-radio-name').value = '';
+      document.getElementById('new-radio-url').value = '';
+      alert('Stazione "' + name + '" aggiunta! Clicca su Salva per applicarla.');
+    };
+
+    async function save(autoSwitch = false) {
+      const active = settings.themes[settings.activeTheme];
+      if (active && !autoSwitch) {
+        const editName = document.getElementById('theme-edit-name')?.value.trim();
+        const editIcon = document.getElementById('theme-edit-icon')?.value.trim();
+        if (editName) active.name = editName;
+        if (editIcon) active.icon = editIcon;
+
+        active.slideshowFilter = document.getElementById('slideshow-filter-select').value;
+        active.photoSource = document.getElementById('photo-source-select').value;
+
+        const savedSel = document.getElementById('saved-albums-select');
+        if (savedSel && savedSel.value !== '__custom__') {
+          active.albumUrl = savedSel.value;
+        } else {
+          active.albumUrl = document.getElementById('album-url')?.value.trim() || '';
+        }
+        active.pinterestUrl = document.getElementById('pinterest-url').value.trim();
+        active.radioStationId = document.getElementById('radio-select').value;
+
+        const themeCal = document.getElementById('theme-calendar-toggle');
+        if (themeCal) active.showCalendar = themeCal.checked;
+        const themeAlerts = document.getElementById('theme-alerts-toggle');
+        if (themeAlerts) active.showAlerts = themeAlerts.checked;
+        const themePopups = document.getElementById('theme-popups-toggle');
+        if (themePopups) active.showPopups = themePopups.checked;
+        const themeComments = document.getElementById('theme-photo-comments-toggle');
+        if (themeComments) active.showPhotoComments = themeComments.checked;
+      }
+
+      settings.uiMode = selectedUiMode;
+      const toSel = document.getElementById('ui-timeout-select');
+      if (toSel) {
+        settings.uiTimeoutSec = parseInt(toSel.value, 10) || 15;
+      }
+
+      const motionSel = document.getElementById('motion-effect-select');
+      if (motionSel) {
+        settings.motionEffect = motionSel.value;
+      }
+
+      const slideSel = document.getElementById('slide-interval-select');
+      if (slideSel) {
+        settings.slideIntervalSec = parseInt(slideSel.value, 10) || 60;
+      }
+
+      const volSlider = document.getElementById('volume-slider');
+      if (volSlider) {
+        settings.audioVolume = (parseInt(volSlider.value, 10) || 50) / 100;
+      }
+
+      const calToggle = document.getElementById('calendar-toggle');
+      if (calToggle) {
+        settings.showCalendar = calToggle.checked;
+      }
+
+      const alertsToggle = document.getElementById('alerts-toggle');
+      if (alertsToggle) {
+        settings.showAlerts = alertsToggle.checked;
+      }
+
+      const popupsToggle = document.getElementById('popups-toggle');
+      if (popupsToggle) {
+        settings.showPopups = popupsToggle.checked;
+      }
+
+      const commentsToggle = document.getElementById('photo-comments-toggle');
+      if (commentsToggle) {
+        settings.showPhotoComments = commentsToggle.checked;
+      }
+
+      const reolinkToggle = document.getElementById('reolink-toggle');
+      if (reolinkToggle) {
+        settings.reolinkEnabled = reolinkToggle.checked;
+      }
+
+      const nightToggle = document.getElementById('night-dim-toggle');
+      if (nightToggle) {
+        settings.smartNightDim = nightToggle.checked;
+      }
+
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      const data = await res.json();
+      if (data && data.settings) {
+        settings = data.settings;
+      }
+
+      renderThemes();
+      renderSavedAlbumsList();
+      renderSavedAlbumsSelect();
+      syncSavedAlbumSelect();
+      renderUiMode();
+      showToast();
+    }
+
+    const toSelEl = document.getElementById('ui-timeout-select');
+    if (toSelEl) {
+      toSelEl.onchange = () => save(true);
+    }
+
+    const volSliderEl = document.getElementById('volume-slider');
+    if (volSliderEl) {
+      volSliderEl.oninput = function () {
+        document.getElementById('volume-val').textContent = this.value + '%';
+      };
+      volSliderEl.onchange = () => save(true);
+    }
+
+    const slideSelEl = document.getElementById('slide-interval-select');
+    if (slideSelEl) {
+      slideSelEl.onchange = () => save(true);
+    }
+
+    const reolinkEl = document.getElementById('reolink-toggle');
+    if (reolinkEl) {
+      reolinkEl.onchange = () => save(true);
+    }
+
+    const nightEl = document.getElementById('night-dim-toggle');
+    if (nightEl) {
+      nightEl.onchange = () => save(true);
+    }
+
+    document.getElementById('save-btn').onclick = () => save(false);
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      if (msg) t.textContent = msg;
+      else t.textContent = 'Impostazioni salvate! TV aggiornata ⚡';
+      t.style.display = 'block';
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => { t.style.display = 'none'; }, 2400);
+    }
+
+    load();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Smart Frame</title>
+
+  <!-- PWA & Apple iOS Support (iPhone 13 Pro) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Smart Frame">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <link rel="stylesheet" href="css/style.css?v=13">
+</head>
+<body>
+  <!-- Slideshow: livelli alternati in dissolvenza -->
+  <div id="slideshow" class="slideshow" aria-hidden="true">
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <div id="empty-hint" class="empty-hint" hidden>
+    <div class="empty-hint-card">
+      <span class="empty-hint-icon" id="empty-hint-icon">📸</span>
+      <h3 id="empty-hint-title">Nessun album configurato</h3>
+      <p id="empty-hint-desc">Per questa modalità non è ancora stato inserito un album Google Photos.<br>Apri <b>/settings</b> dallo smartphone per inserire il link dell'album.</p>
+    </div>
+  </div>
+
+  <!-- Audio Background Player (Lofi Chill) -->
+  <audio id="bg-audio" preload="none" src="https://lofi.stream.laut.fm/lofi"></audio>
+
+  <!-- 1. IN ALTO A SINISTRA: Avvisi Casa & Telecamera Reolink PiP -->
+  <div class="top-left-container" id="top-left-container">
+    <div id="top-left-alerts" class="top-left-alerts"></div>
+    <div id="reolink-pip" class="reolink-pip" hidden>
+      <div class="reolink-header">
+        <span class="reolink-badge">🔴 LIVE</span>
+        <span class="reolink-title">Webcam Soggiorno</span>
+        <button class="reolink-expand-btn" id="reolink-expand-btn" title="Espandi a schermo intero">⛶</button>
+      </div>
+      <div class="reolink-view">
+        <img id="reolink-img" alt="Reolink Live" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal telecamera a tutto schermo -->
+  <div id="reolink-modal" class="reolink-modal" hidden>
+    <img id="reolink-modal-img" alt="Reolink Fullscreen" />
+    <button id="reolink-close-modal" class="reolink-close-btn">✕ Chiudi (Esc / Back)</button>
+  </div>
+
+  <!-- Popup Elegante Commenti & Didascalie Foto -->
+  <div id="photo-comment-popup" class="photo-comment-popup" hidden>
+    <div class="comment-bubble">
+      <span class="comment-icon">💬</span>
+      <div class="comment-body">
+        <div id="photo-comment-author" class="comment-author" hidden></div>
+        <div id="photo-comment-text" class="comment-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Didascalia e info foto in sovrimpressione -->
+  <div id="photo-caption" class="photo-caption" hidden>
+    <span id="photo-memory-badge" class="memory-badge" hidden>🗓️ Accadde Oggi</span>
+    <span id="photo-caption-text"></span>
+  </div>
+
+  <!-- 2. IN ALTO A DESTRA: Riquadro Casa Home Assistant + Pillola Musica -->
+  <aside id="ha-panel" class="panel panel--top-home" hidden>
+    <header class="panel__header">
+      <div class="ha-header-title">
+        <h2 id="ha-greeting">🏡 Casa</h2>
+        <span class="ha-presence" id="ha-presence"></span>
+      </div>
+      <button id="music-indicator" class="music-pill is-muted" title="Musica Lofi">
+        <span class="music-icon">🔇</span>
+        <span class="music-label">Lofi</span>
+      </button>
+    </header>
+
+    <div class="ha-grid">
+      <div class="ha-item">
+        <span class="ha-item__label">🌡️ Temperatura</span>
+        <span class="ha-item__val" id="ha-temp-val">--°</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">💧 Umidità</span>
+        <span class="ha-item__val" id="ha-hum-val">--%</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">🍃 CO2</span>
+        <span class="ha-item__val" id="ha-co2-val">-- ppm</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">🌫️ Polveri PM2.5</span>
+        <span class="ha-item__val" id="ha-pm25-val">-- μg/m³</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">💡 Luci</span>
+        <span class="ha-item__val" id="ha-lights-val">Spente</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">🌐 Internet</span>
+        <span class="ha-item__val" id="ha-net-val">Online</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">❄️ Climatizzatori</span>
+        <span class="ha-item__val" id="ha-ac-val">Spenti</span>
+      </div>
+      <div class="ha-item">
+        <span class="ha-item__label">🫧 Elettrodomestici</span>
+        <span class="ha-item__val" id="ha-appliances-val">Spente</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 3. IN BASSO: Orologio/Meteo a sinistra, Calendario a destra -->
+  <main id="overlay" class="overlay">
+    <!-- In basso a sinistra: orologio, data, meteo -->
+    <section class="panel panel--clock">
+      <div class="clock">
+        <span id="clock-time" class="clock__time">--:--</span>
+        <span id="clock-seconds" class="clock__seconds"></span>
+      </div>
+      <div id="clock-date" class="clock__date"></div>
+
+      <div class="weather">
+        <div id="weather-icon" class="weather__icon"></div>
+        <div class="weather__main">
+          <div id="weather-temp" class="weather__temp">--°</div>
+          <div id="weather-desc" class="weather__desc">Caricamento meteo…</div>
+        </div>
+      </div>
+      <div id="weather-meta" class="weather__meta"></div>
+      <ul id="forecast" class="forecast"></ul>
+    </section>
+
+    <!-- In basso a destra: prossimi impegni Google Calendar -->
+    <section id="events-panel" class="panel panel--events">
+      <header class="panel__header">
+        <h2>📅 Prossimi impegni</h2>
+        <span id="events-status" class="panel__status"></span>
+      </header>
+      <ul id="events" class="events"></ul>
+    </section>
+  </main>
+
+  <!-- Indicatori di stato -->
+  <div id="pause-badge" class="badge badge--pause" hidden>⏸ In pausa</div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="offline" class="badge badge--offline" hidden>⚠ Connessione persa</div>
+
+  <!-- Oscuramento notturno -->
+  <div id="dimmer" class="dimmer"></div>
+
+  <script src="js/app.js?v=13"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
