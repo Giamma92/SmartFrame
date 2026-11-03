@@ -1343,6 +1343,7 @@
     var imgs = slide.querySelectorAll('img');
     for (var i = 0; i < imgs.length; i++) {
       if (imgs[i].getAnimations) imgs[i].getAnimations().forEach(function (a) { a.cancel(); });
+      imgs[i].src = ''; // Dealloca esplicitamente la memoria bitmap su WebKit/Chromium TV
     }
     clear(slide);
   }
@@ -1467,8 +1468,23 @@
     OK: [13, 32], // Enter, Space
     PLAY_PAUSE: [415, 19, 179, 10252],
     BACK: [8, 27, 461, 10009],
-    MUTE: [449, 173, 77] // Mute telecomando, tasto M
+    MUTE: [449, 173, 77], // Mute telecomando, tasto M
+    RED: [403, 82], // VK_RED o 'r'
+    GREEN: [404, 71], // VK_GREEN o 'g'
+    YELLOW: [405, 89], // VK_YELLOW o 'y'
+    BLUE: [406, 66] // VK_BLUE o 'b'
   };
+
+  var legendTimer = null;
+  var legendEl = $('remote-legend');
+  function showRemoteLegend() {
+    if (!legendEl) return;
+    legendEl.classList.add('is-visible');
+    clearTimeout(legendTimer);
+    legendTimer = setTimeout(function () {
+      legendEl.classList.remove('is-visible');
+    }, 4500);
+  }
 
   function matches(e, names, codes) {
     return names.indexOf(e.key) !== -1 || codes.indexOf(e.keyCode) !== -1;
@@ -1486,8 +1502,9 @@
       }
     }
 
-    // Risveglia l'interfaccia su qualsiasi tasto se autohide attivo
+    // Risveglia l'interfaccia su qualsiasi tasto se autohide attivo e mostra brevemente la legenda
     handleUserActivity();
+    showRemoteLegend();
 
     // Limita la ripetizione se il tasto resta premuto
     var now = Date.now();
@@ -1505,6 +1522,32 @@
       if (!e.repeat) togglePause();
     } else if (matches(e, ['VolumeMute', 'AudioVolumeMute', 'm', 'M'], KEY.MUTE)) {
       if (!e.repeat) toggleAudio();
+    } else if (matches(e, ['ColorF0Red', 'Red', 'r', 'R'], KEY.RED)) {
+      // 🔴 Tasto Rosso: Musica / Radio Chill
+      if (!e.repeat) {
+        toggleAudio();
+        showToast(audioPlaying ? '🎵 Musica attivata' : '🔇 Musica disattivata');
+      }
+    } else if (matches(e, ['ColorF1Green', 'Green', 'g', 'G'], KEY.GREEN)) {
+      // 🟢 Tasto Verde: Mostra / Nascondi tutti i pannelli
+      if (!e.repeat) {
+        setUIVisibility(!uiState.visible);
+        if (uiState.mode === 'autohide' && uiState.visible) resetUiTimer();
+        showToast(uiState.visible ? '📺 Pannelli visibili' : '🖼️ Modalità solo foto');
+      }
+    } else if (matches(e, ['ColorF2Yellow', 'Yellow', 'y', 'Y'], KEY.YELLOW)) {
+      // 🟡 Tasto Giallo: Toggle Didascalia e info foto
+      if (!e.repeat) {
+        if (els.photoCaption) {
+          els.photoCaption.hidden = !els.photoCaption.hidden;
+          showToast(els.photoCaption.hidden ? 'Didascalia nascosta' : 'Didascalia visibile');
+        }
+      }
+    } else if (matches(e, ['ColorF3Blue', 'Blue', 'b', 'B'], KEY.BLUE)) {
+      // 🔵 Tasto Blu: Foto successiva immediata
+      if (!e.repeat && state.photos.length) {
+        goNext(true);
+      }
     } else if (matches(e, ['ArrowUp', 'Up', 'ArrowDown', 'Down'], KEY.UP.concat(KEY.DOWN))) {
       // ▲ / ▼: mostra/nasconde i pannelli (modalità "solo foto")
       if (!e.repeat) {
@@ -1521,9 +1564,6 @@
         setUIVisibility(true);
         if (uiState.mode === 'autohide') resetUiTimer();
       } else {
-        // Come app installata su VIDAA, window.close() torna al launcher.
-        // Non chiamiamo preventDefault: se close() non è permesso, il browser
-        // esegue la sua azione predefinita (es. pagina precedente / uscita).
         try { window.close(); } catch (err) { /* ignorato */ }
         handled = false;
       }
@@ -1648,6 +1688,19 @@
       }).catch(function () {});
     } catch (e) {}
   })();
+
+  // Auto-refresh notturno di sicurezza alle 04:00 per azzerare la RAM del browser TV
+  var lastPurgeDay = -1;
+  setInterval(function checkDailyMemoryPurge() {
+    var now = new Date();
+    var hour = now.getHours();
+    var day = now.getDate();
+    if (hour === 4 && lastPurgeDay !== day) {
+      lastPurgeDay = day;
+      console.log('[frame] Auto-refresh notturno di manutenzione per reset RAM TV...');
+      window.location.reload(true);
+    }
+  }, 60 * 1000);
 
   setupLiveSync();
   pollSettingsVersion();

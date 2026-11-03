@@ -53,23 +53,24 @@
 
   function getIcon(name, extraClass) {
     var content = ICONS[name] || ICONS.sun;
-    var cls = 'svg-icon' + (extraClass ? ' ' + extraClass : '');
+    var cls = 'svg-icon svg-icon--' + name + (extraClass ? ' ' + extraClass : '');
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' + cls + '">' + content + '</svg>';
   }
 
   function getWeatherIcon(code, isDay) {
-    if (code === undefined || code === null) return getIcon(isDay ? 'sun' : 'moon', 'svg-icon--weather');
-    var c = Number(code);
-
-    if (c === 0) return getIcon(isDay ? 'sun' : 'moon', 'svg-icon--weather');
-    if (c === 1 || c === 2) return getIcon(isDay ? 'cloudSun' : 'cloud', 'svg-icon--weather');
-    if (c === 3) return getIcon('cloud', 'svg-icon--weather');
-    if (c === 45 || c === 48) return getIcon('pm25', 'svg-icon--weather');
-    if (c >= 51 && c <= 67) return getIcon('cloudRain', 'svg-icon--weather');
-    if (c >= 71 && c <= 86) return getIcon('cloudSnow', 'svg-icon--weather');
-    if (c >= 95) return getIcon('cloudLightning', 'svg-icon--weather');
-
-    return getIcon(isDay ? 'sun' : 'cloud', 'svg-icon--weather');
+    var name = isDay ? 'sun' : 'moon';
+    if (code !== undefined && code !== null) {
+      var c = Number(code);
+      if (c === 0) name = isDay ? 'sun' : 'moon';
+      else if (c === 1 || c === 2) name = isDay ? 'cloudSun' : 'cloud';
+      else if (c === 3) name = 'cloud';
+      else if (c === 45 || c === 48) name = 'pm25';
+      else if (c >= 51 && c <= 67) name = 'cloudRain';
+      else if (c >= 71 && c <= 86) name = 'cloudSnow';
+      else if (c >= 95) name = 'cloudLightning';
+      else name = isDay ? 'sun' : 'cloud';
+    }
+    return getIcon(name, 'svg-icon--weather svg-icon--' + name);
   }
 
   window.SmartIcons = {

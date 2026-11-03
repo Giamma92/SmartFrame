@@ -771,7 +771,128 @@ html, body {
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  margin-right: 0.25rem;
+  margin-right: 0.35rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease;
+}
+
+.icon-slot .svg-icon {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+/* =====================================================================
+   Palette Colori Semantici Icone Dashboard (Stile Apple / Home Assistant)
+   ===================================================================== */
+.icon-slot[data-icon="home"] { background: rgba(16, 185, 129, 0.18); color: #10b981; }
+.icon-slot[data-icon="thermometer"] { background: rgba(248, 113, 113, 0.18); color: #f87171; }
+.icon-slot[data-icon="droplet"] { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+.icon-slot[data-icon="leaf"] { background: rgba(74, 222, 128, 0.18); color: #4ade80; }
+.icon-slot[data-icon="pm25"] { background: rgba(192, 132, 252, 0.18); color: #c084fc; }
+.icon-slot[data-icon="lightbulb"] { background: rgba(250, 204, 21, 0.18); color: #facc15; }
+.icon-slot[data-icon="globe"] { background: rgba(96, 165, 250, 0.18); color: #60a5fa; }
+.icon-slot[data-icon="snowflake"] { background: rgba(103, 232, 249, 0.18); color: #67e8f9; }
+.icon-slot[data-icon="plug"] { background: rgba(232, 121, 249, 0.18); color: #e879f9; }
+.icon-slot[data-icon="calendar"] { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+.icon-slot[data-icon="music"], .icon-slot[data-icon="musicOff"] { background: rgba(244, 114, 182, 0.18); color: #f472b6; }
+.icon-slot[data-icon="sparkles"] { background: rgba(251, 191, 36, 0.18); color: #fbbf24; }
+.icon-slot[data-icon="chat"] { background: rgba(45, 212, 191, 0.18); color: #2dd4bf; }
+.icon-slot[data-icon="pause"] { background: rgba(255, 255, 255, 0.15); color: #ffffff; }
+.icon-slot[data-icon="warning"] { background: rgba(245, 158, 11, 0.18); color: #f59e0b; }
+
+/* Colori specifici Meteo Vettoriali */
+.svg-icon--weather.svg-icon--sun { color: #facc15; filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.5)); }
+.svg-icon--weather.svg-icon--cloudSun { color: #fbbf24; }
+.svg-icon--weather.svg-icon--cloud { color: #cbd5e1; }
+.svg-icon--weather.svg-icon--cloudRain { color: #38bdf8; }
+.svg-icon--weather.svg-icon--cloudLightning { color: #facc15; }
+.svg-icon--weather.svg-icon--cloudSnow { color: #e0f2fe; }
+.svg-icon--weather.svg-icon--pm25 { color: #a78bfa; }
+
+/* Micro-badge nella pillola musicale */
+.music-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(244, 114, 182, 0.15);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  color: #f472b6;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.music-pill.is-muted {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-dim);
+}
+.music-pill .icon-slot {
+  width: 1.4rem;
+  height: 1.4rem;
+  background: transparent;
+  margin-right: 0;
+}
+
+/* =====================================================================
+   Mini-Legenda Telecomando TV Hisense (A scomparsa discreta)
+   ===================================================================== */
+.remote-legend {
+  position: fixed;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: 2rem;
+  background: rgba(10, 14, 22, 0.88);
+  backdrop-filter: blur(1.2rem);
+  -webkit-backdrop-filter: blur(1.2rem);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 95;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+.remote-legend.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.remote-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.remote-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px currentColor;
+}
+.remote-dot--red { background-color: #ef4444; color: #ef4444; }
+.remote-dot--green { background-color: #10b981; color: #10b981; }
+.remote-dot--yellow { background-color: #eab308; color: #eab308; }
+.remote-dot--blue { background-color: #3b82f6; color: #3b82f6; }
+.remote-key-tag {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .live-dot {
