@@ -22,7 +22,7 @@
   <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
   <link rel="manifest" href="/manifest.webmanifest">
 
-  <link rel="stylesheet" href="css/style.css?v=13">
+  <link rel="stylesheet" href="css/style.css?v=15">
 </head>
 <body>
   <!-- Slideshow: livelli alternati in dissolvenza -->
@@ -120,8 +120,8 @@
         <span class="ha-item__label"><span class="icon-slot" data-icon="lightbulb"></span> Luci</span>
         <span class="ha-item__val" id="ha-lights-val">Spente</span>
       </div>
-      <div class="ha-item">
-        <span class="ha-item__label"><span class="icon-slot" data-icon="globe"></span> Internet</span>
+      <div class="ha-item ha-item--clickable" id="ha-wifi-btn" title="Apri Wi-Fi Ospiti (Giallo)">
+        <span class="ha-item__label"><span class="icon-slot" data-icon="wifi"></span> Internet</span>
         <span class="ha-item__val" id="ha-net-val"><span class="ha-status-badge is-online"><span class="ha-status-dot"></span>Online</span></span>
       </div>
       <div class="ha-item">
@@ -132,6 +132,24 @@
         <span class="ha-item__label"><span class="icon-slot" data-icon="plug"></span> Elettrodomestici</span>
         <span class="ha-item__val" id="ha-appliances-val">Spente</span>
       </div>
+    </div>
+  </aside>
+
+  <!-- Floating Apple Music style Now Playing pill -->
+  <aside id="now-playing-pill" class="now-playing-pill" hidden>
+    <div class="now-playing-pill__cover">
+      <img id="now-playing-img" src="" alt="Album Art" />
+      <span id="now-playing-fallback" class="now-playing-fallback"><span class="icon-slot" data-icon="disc"></span></span>
+    </div>
+    <div class="now-playing-pill__info">
+      <div id="now-playing-title" class="now-playing-pill__title">--</div>
+      <div id="now-playing-artist" class="now-playing-pill__artist">--</div>
+    </div>
+    <div class="now-playing-bars" aria-label="Musica in riproduzione">
+      <span class="bar bar--1"></span>
+      <span class="bar bar--2"></span>
+      <span class="bar bar--3"></span>
+      <span class="bar bar--4"></span>
     </div>
   </aside>
 
@@ -153,6 +171,11 @@
         </div>
       </div>
       <div id="weather-meta" class="weather__meta"></div>
+      <div id="weather-sun-row" class="weather-sun-row" hidden>
+        <span class="sun-item" id="sun-rise"><span class="icon-slot" data-icon="sunrise"></span> <span id="sun-rise-val">--:--</span></span>
+        <span class="sun-item" id="sun-set"><span class="icon-slot" data-icon="sunset"></span> <span id="sun-set-val">--:--</span></span>
+      </div>
+      <div id="weather-hourly" class="weather-hourly" hidden></div>
       <ul id="forecast" class="forecast"></ul>
     </section>
 
@@ -166,6 +189,32 @@
     </section>
   </main>
 
+  <!-- Modal Wi-Fi Ospiti con QR Code -->
+  <div id="wifi-modal" class="wifi-modal" hidden>
+    <div class="wifi-card">
+      <button id="wifi-close-btn" class="wifi-close-btn" title="Chiudi (Esc / Back)"><span class="icon-slot" data-icon="close"></span></button>
+      <div class="wifi-header">
+        <span class="wifi-icon-badge"><span class="icon-slot" data-icon="wifi"></span></span>
+        <h2>Wi-Fi Ospiti</h2>
+        <p class="wifi-subtitle">Inquadra con la fotocamera per connetterti</p>
+      </div>
+      <div class="wifi-qr-container">
+        <div id="wifi-qr-box" class="wifi-qr-box"></div>
+      </div>
+      <div class="wifi-details">
+        <div class="wifi-detail-row">
+          <span class="wifi-detail-label">Rete:</span>
+          <span class="wifi-detail-val" id="wifi-ssid-val">--</span>
+        </div>
+        <div class="wifi-detail-row" id="wifi-password-row">
+          <span class="wifi-detail-label">Password:</span>
+          <span class="wifi-detail-val wifi-code" id="wifi-password-val">--</span>
+        </div>
+      </div>
+      <div class="wifi-hint"><span class="remote-key-tag">GIALLO</span> o <span class="remote-key-tag">BACK</span> per chiudere</div>
+    </div>
+  </div>
+
   <!-- Indicatori di stato -->
   <div id="pause-badge" class="badge badge--pause" hidden><span class="icon-slot" data-icon="pause"></span> In pausa</div>
   <div id="toast" class="toast" hidden></div>
@@ -175,7 +224,7 @@
   <div id="remote-legend" class="remote-legend" aria-hidden="true">
     <div class="remote-item"><span class="remote-dot remote-dot--red"></span> Musica</div>
     <div class="remote-item"><span class="remote-dot remote-dot--green"></span> Pannelli</div>
-    <div class="remote-item"><span class="remote-dot remote-dot--yellow"></span> Info Foto</div>
+    <div class="remote-item"><span class="remote-dot remote-dot--yellow"></span> Wi-Fi QR</div>
     <div class="remote-item"><span class="remote-dot remote-dot--blue"></span> Prossima</div>
     <div class="remote-item"><span class="remote-key-tag">◀ ▶</span> Foto</div>
     <div class="remote-item"><span class="remote-key-tag">OK</span> Pausa</div>
@@ -184,8 +233,8 @@
   <!-- Oscuramento notturno -->
   <div id="dimmer" class="dimmer"></div>
 
-  <script src="js/icons.js?v=1"></script>
-  <script src="js/app.js?v=14"></script>
+  <script src="js/icons.js?v=2"></script>
+  <script src="js/app.js?v=15"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

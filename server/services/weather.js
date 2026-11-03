@@ -51,6 +51,7 @@ async function fetchWeather() {
     longitude: String(lon),
     current: 'temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,wind_speed_10m',
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',
+    hourly: 'temperature_2m,weather_code,is_day,precipitation_probability',
     timezone: 'auto',
     forecast_days: '4',
   }).toString();
@@ -61,6 +62,33 @@ async function fetchWeather() {
 
   const c = data.current;
   const d = data.daily;
+  const h = data.hourly;
+
+  const sunrise = d.sunrise?.[0] ? d.sunrise[0].split('T')[1]?.slice(0, 5) : null;
+  const sunset = d.sunset?.[0] ? d.sunset[0].split('T')[1]?.slice(0, 5) : null;
+
+  // Previsioni per i prossimi 4 step orari (step di 1h a partire da ora)
+  const hourly = [];
+  if (h && Array.isArray(h.time)) {
+    const nowTime = Date.now();
+    for (let i = 0; i < h.time.length; i++) {
+      const stepDate = new Date(h.time[i]);
+      if (stepDate.getTime() >= nowTime - 15 * 60_000 && hourly.length < 4) {
+        const timeStr = h.time[i].includes('T') ? h.time[i].split('T')[1].slice(0, 5) : h.time[i];
+        const isDayStep = h.is_day ? h.is_day[i] === 1 : true;
+        const code = h.weather_code[i];
+        hourly.push({
+          time: timeStr,
+          temp: Math.round(h.temperature_2m[i]),
+          code,
+          isDay: isDayStep,
+          precipProb: h.precipitation_probability?.[i] ?? null,
+          ...describe(code, isDayStep),
+        });
+      }
+    }
+  }
+
   const daily = d.time.map((date, i) => ({
     date,
     code: d.weather_code[i],
@@ -83,6 +111,11 @@ async function fetchWeather() {
     ...describe(c.weather_code, c.is_day === 1),
     today: daily[0],
     daily,
+    sun: {
+      sunrise,
+      sunset,
+    },
+    hourly,
     updatedAt: new Date().toISOString(),
   };
 }

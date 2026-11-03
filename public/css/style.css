@@ -1197,11 +1197,351 @@ body.no-blur .top-left-alerts,
 body.no-blur .reolink-pip,
 body.no-blur .photo-comment-popup .comment-bubble,
 body.no-blur .photo-caption,
+body.no-blur .now-playing-pill,
+body.no-blur .wifi-modal,
+body.no-blur .wifi-card,
 body.no-blur .badge,
 body.no-blur .toast {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   background: rgba(14, 18, 26, 0.88) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* =====================================================================
+   Now Playing Capsule (Stile Apple Music Glassmorphic)
+   ===================================================================== */
+.now-playing-pill {
+  position: fixed;
+  top: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%) translate3d(0, 0, 0);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.5rem 1.15rem 0.5rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(15, 20, 30, 0.74);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 15px rgba(96, 165, 250, 0.15);
+  max-width: 38rem;
+  min-width: 20rem;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+.now-playing-pill[hidden] {
+  display: none !important;
+}
+.now-playing-pill__cover {
+  position: relative;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.now-playing-pill__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.now-playing-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+}
+.now-playing-fallback .svg-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.now-playing-pill__info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  flex: 1;
+}
+.now-playing-pill__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+.now-playing-pill__artist {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.now-playing-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 1.2rem;
+  padding-left: 0.3rem;
+  flex-shrink: 0;
+}
+.now-playing-bars .bar {
+  width: 3px;
+  background: #60a5fa;
+  border-radius: 2px;
+  animation: barBounce 1.2s infinite ease-in-out;
+}
+.now-playing-bars .bar--1 { height: 40%; animation-delay: 0.1s; }
+.now-playing-bars .bar--2 { height: 90%; animation-delay: 0.35s; }
+.now-playing-bars .bar--3 { height: 60%; animation-delay: 0.2s; }
+.now-playing-bars .bar--4 { height: 100%; animation-delay: 0.45s; }
+@keyframes barBounce {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+/* =====================================================================
+   Meteo: Orari Solari (Alba/Tramonto) & Micro-chip Previsioni Orarie
+   ===================================================================== */
+.weather-sun-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.weather-sun-row[hidden] {
+  display: none !important;
+}
+.sun-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.sun-item .svg-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #fbbf24;
+}
+
+.weather-hourly {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+.weather-hourly[hidden] {
+  display: none !important;
+}
+.weather-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.45rem 0.3rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+.weather-chip__time {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+.weather-chip__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.weather-chip__icon .svg-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+.weather-chip__temp {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.weather-chip__precip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-top: -0.1rem;
+}
+
+/* =====================================================================
+   Modal Wi-Fi Ospiti & QR Code
+   ===================================================================== */
+.wifi-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+.wifi-modal[hidden] {
+  display: none !important;
+}
+.wifi-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(28, 36, 50, 0.96), rgba(16, 22, 34, 0.96));
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.8rem;
+  padding: 2.4rem 2.8rem;
+  width: min(34rem, 90vw);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(96, 165, 250, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+.wifi-close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.wifi-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+.wifi-close-btn .svg-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.wifi-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+.wifi-icon-badge .svg-icon {
+  width: 2rem;
+  height: 2rem;
+}
+.wifi-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: #ffffff;
+}
+.wifi-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.4rem;
+}
+.wifi-qr-container {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  margin-bottom: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wifi-qr-box {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wifi-qr-box svg, .wifi-qr-box img, .wifi-qr-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.wifi-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.9rem;
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+.wifi-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+}
+.wifi-detail-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+.wifi-detail-val {
+  font-weight: 700;
+  color: #ffffff;
+}
+.wifi-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  letter-spacing: 0.05em;
+  font-size: 1.05rem;
+  color: #93c5fd;
+}
+.wifi-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ha-item--clickable {
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.ha-item--clickable:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 0.6rem;
 }
 

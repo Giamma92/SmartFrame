@@ -85,6 +85,12 @@ let currentSettings = {
   reolinkEnabled: true, // Mostra PiP telecamera Reolink se attiva
   smartNightDim: true, // Oscuramento notturno intelligente con luci/lux
   motionEffect: 'cinematic', // 'cinematic' (zoom & pan dinamico), 'vibrant' (molto dinamico), 'gentle' (ultra lento), 'none' (statico)
+  wifi: {
+    enabled: true,
+    ssid: process.env.WIFI_SSID || 'Casa Moretti',
+    password: process.env.WIFI_PASSWORD || '',
+    guest: true
+  },
   themes: { ...PRESET_THEMES },
   savedAlbums: [...DEFAULT_SAVED_ALBUMS],
   radioStations: [...DEFAULT_RADIO_STATIONS]
@@ -154,6 +160,12 @@ export async function loadSettings() {
       reolinkEnabled: parsed.reolinkEnabled !== undefined ? Boolean(parsed.reolinkEnabled) : true,
       smartNightDim: parsed.smartNightDim !== undefined ? Boolean(parsed.smartNightDim) : true,
       motionEffect: parsed.motionEffect || 'cinematic',
+      wifi: parsed.wifi || currentSettings.wifi || {
+        enabled: true,
+        ssid: process.env.WIFI_SSID || 'Casa Moretti',
+        password: process.env.WIFI_PASSWORD || '',
+        guest: true
+      },
       themes: mergedThemes,
       savedAlbums: parsed.savedAlbums && parsed.savedAlbums.length ? parsed.savedAlbums : [...DEFAULT_SAVED_ALBUMS],
       radioStations: parsed.radioStations && parsed.radioStations.length ? parsed.radioStations : [...DEFAULT_RADIO_STATIONS]

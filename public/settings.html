@@ -654,6 +654,22 @@
       </div>
       <input type="checkbox" id="night-dim-toggle" checked />
     </div>
+  </div>
+
+  <!-- 7. RETE WI-FI OSPITI (QR CODE PER SMART TV) -->
+  <div class="section-title">7. Rete Wi-Fi Ospiti (QR Code su TV)</div>
+  <div class="card">
+    <p style="color:var(--text-dim); font-size:0.86rem; margin-bottom:0.85rem; line-height:1.45;">
+      Configura la rete Wi-Fi di casa o per gli ospiti. Potrai mostrare il QR code a schermo premendo il <b>tasto Giallo</b> del telecomando oppure cliccando su Internet.
+    </p>
+    <div class="form-group">
+      <label>Nome Rete Wi-Fi (SSID):</label>
+      <input type="text" id="wifi-ssid-input" placeholder="Es. Casa Moretti" />
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label>Password Wi-Fi:</label>
+      <input type="text" id="wifi-password-input" placeholder="Lascia vuoto se la rete è aperta" />
+    </div>
 
     <button class="btn" id="save-btn" style="margin-top: 1.3rem;">⚡ Salva e Aggiorna TV Subito</button>
   </div>
@@ -1257,6 +1273,12 @@
       if (reolinkEl) reolinkEl.checked = settings.reolinkEnabled !== false;
       const nightEl = document.getElementById('night-dim-toggle');
       if (nightEl) nightEl.checked = settings.smartNightDim !== false;
+
+      // 7. Rete Wi-Fi Ospiti
+      const wifiSsid = document.getElementById('wifi-ssid-input');
+      if (wifiSsid) wifiSsid.value = settings.wifi?.ssid || 'Casa Moretti';
+      const wifiPass = document.getElementById('wifi-password-input');
+      if (wifiPass) wifiPass.value = settings.wifi?.password || '';
     }
 
     async function switchTheme(themeId) {
@@ -1363,6 +1385,17 @@
       const nightToggle = document.getElementById('night-dim-toggle');
       if (nightToggle) {
         settings.smartNightDim = nightToggle.checked;
+      }
+
+      const wifiSsid = document.getElementById('wifi-ssid-input');
+      const wifiPass = document.getElementById('wifi-password-input');
+      if (wifiSsid) {
+        settings.wifi = {
+          enabled: true,
+          ssid: wifiSsid.value.trim() || 'Casa Moretti',
+          password: wifiPass ? wifiPass.value.trim() : '',
+          guest: true
+        };
       }
 
       const res = await fetch('/api/settings', {

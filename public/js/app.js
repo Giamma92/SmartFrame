@@ -97,7 +97,23 @@
     photoCommentText: $('photo-comment-text'),
     photoCommentAuthor: $('photo-comment-author'),
     bgAudio: $('bg-audio'),
-    musicIndicator: $('music-indicator')
+    musicIndicator: $('music-indicator'),
+    haWifiBtn: $('ha-wifi-btn'),
+    nowPlayingPill: $('now-playing-pill'),
+    nowPlayingImg: $('now-playing-img'),
+    nowPlayingFallback: $('now-playing-fallback'),
+    nowPlayingTitle: $('now-playing-title'),
+    nowPlayingArtist: $('now-playing-artist'),
+    weatherSunRow: $('weather-sun-row'),
+    sunRiseVal: $('sun-rise-val'),
+    sunSetVal: $('sun-set-val'),
+    weatherHourly: $('weather-hourly'),
+    wifiModal: $('wifi-modal'),
+    wifiCloseBtn: $('wifi-close-btn'),
+    wifiQrBox: $('wifi-qr-box'),
+    wifiSsidVal: $('wifi-ssid-val'),
+    wifiPasswordVal: $('wifi-password-val'),
+    wifiPasswordRow: $('wifi-password-row')
   };
 
   // ---------------------------------------------------------- Utility ---
@@ -591,6 +607,53 @@
         if (reolinkModalOpen) closeReolinkModal();
       }
     }
+
+    // 11. Now Playing Widget (Apple Music Capsule) & Pausa automatica Lofi
+    renderNowPlaying(ha.nowPlaying);
+  }
+
+  // --------------------------------------------- Now Playing Widget (Apple Music) ---
+  var wasLofiPlayingBeforeHA = false;
+  function renderNowPlaying(np) {
+    if (!els.nowPlayingPill) return;
+
+    if (np && np.state === 'playing') {
+      els.nowPlayingPill.hidden = false;
+      if (els.nowPlayingTitle) {
+        els.nowPlayingTitle.textContent = np.title || 'In riproduzione';
+      }
+      if (els.nowPlayingArtist) {
+        var sub = np.artist || '';
+        if (np.source && (!sub || sub.indexOf(np.source) === -1)) {
+          sub = sub ? sub + ' • ' + np.source : np.source;
+        }
+        els.nowPlayingArtist.textContent = sub || 'Home Assistant';
+      }
+      if (els.nowPlayingImg && els.nowPlayingFallback) {
+        if (np.picture) {
+          els.nowPlayingImg.src = np.picture;
+          els.nowPlayingImg.style.display = 'block';
+          els.nowPlayingFallback.style.display = 'none';
+        } else {
+          els.nowPlayingImg.style.display = 'none';
+          els.nowPlayingFallback.style.display = 'flex';
+        }
+      }
+
+      // Auto-pausa radio Lofi se attualmente attiva
+      if (audioPlaying && els.bgAudio && !els.bgAudio.paused) {
+        wasLofiPlayingBeforeHA = true;
+        stopAudioStream();
+        showToast('⏸️ Lofi in pausa per ' + (np.source || 'musica'));
+      }
+    } else {
+      els.nowPlayingPill.hidden = true;
+      // Ripristina Lofi se era stata messa in pausa da Home Assistant
+      if (wasLofiPlayingBeforeHA) {
+        wasLofiPlayingBeforeHA = false;
+        startAudioStream(false);
+      }
+    }
   }
 
   // ------------------------------------------------ Telecamera Reolink Live ---
@@ -829,6 +892,8 @@
         var status = data.status || {};
 
         applyConfig(data.display || {});
+        state.wifi = data.wifi || null;
+        if (wifiModalOpen) openWifiModal();
         renderWeather(data.weather, status.weather);
         renderHomeAssistant(data.homeAssistant);
         applyTheme(data.theme);
@@ -910,6 +975,43 @@
       meta.push(rainIcon + w.today.precipProb + '%');
     }
     els.weatherMeta.innerHTML = meta.join('   ·   ');
+
+    // Orari Solari (Alba / Tramonto)
+    if (els.weatherSunRow && els.sunRiseVal && els.sunSetVal) {
+      if (w.sun && w.sun.sunrise && w.sun.sunset) {
+        els.sunRiseVal.textContent = w.sun.sunrise;
+        els.sunSetVal.textContent = w.sun.sunset;
+        els.weatherSunRow.hidden = false;
+      } else {
+        els.weatherSunRow.hidden = true;
+      }
+    }
+
+    // Micro-chips Previsioni Orarie
+    if (els.weatherHourly) {
+      clear(els.weatherHourly);
+      if (w.hourly && w.hourly.length) {
+        els.weatherHourly.hidden = false;
+        w.hourly.forEach(function (h) {
+          var chip = el('div', 'weather-chip');
+          chip.appendChild(el('div', 'weather-chip__time', h.time));
+          var icEl = el('div', 'weather-chip__icon');
+          if (window.SmartIcons) {
+            icEl.innerHTML = window.SmartIcons.getWeather(h.code, h.isDay);
+          } else {
+            icEl.textContent = h.icon || '☀️';
+          }
+          chip.appendChild(icEl);
+          chip.appendChild(el('div', 'weather-chip__temp', h.temp + '°'));
+          if (h.precipProb !== null && h.precipProb !== undefined && h.precipProb >= 25) {
+            chip.appendChild(el('div', 'weather-chip__precip', h.precipProb + '%'));
+          }
+          els.weatherHourly.appendChild(chip);
+        });
+      } else {
+        els.weatherHourly.hidden = true;
+      }
+    }
 
     // Previsioni dei prossimi 3 giorni
     clear(els.forecast);
@@ -1188,6 +1290,7 @@
         state.activeSlide = 1 - state.activeSlide;
         updatePhotoCaption(url);
         updatePhotoCommentPopup(url);
+        notifyCurrentPhotoToServer(url);
 
         setTimeout(function () {
           if (!outgoing.classList.contains('is-visible')) {
@@ -1364,6 +1467,92 @@
         }
       }, 14000);
     }, 900);
+  }
+
+  // ------------------------------------ Notifica Foto Corrente ("Alexa, che foto è?") ---
+  var lastNotifiedPhotoUrl = '';
+  function notifyCurrentPhotoToServer(url) {
+    if (!url || url === lastNotifiedPhotoUrl) return;
+    lastNotifiedPhotoUrl = url;
+
+    var meta = state.photoMeta && state.photoMeta[url] ? state.photoMeta[url] : null;
+    var caption = meta ? (meta.caption || meta.comment || meta.title || '') : '';
+    var year = meta && meta.year ? String(meta.year) : '';
+    var location = meta && meta.location ? meta.location : '';
+    var destination = '';
+    var album = (currentTheme && currentTheme.name) || '';
+
+    if (!year) {
+      var dateMatch = url ? url.match(/(\d{4})[-_](\d{2})[-_](\d{2})/) : null;
+      if (dateMatch) year = dateMatch[1];
+    }
+
+    var fullText = (caption + ' ' + url + ' ' + album + ' ' + location).toLowerCase();
+    if (fullText.indexOf('mallorca') !== -1 || fullText.indexOf('palma') !== -1 || fullText.indexOf('mesquida') !== -1) {
+      destination = 'Mallorca 🇪🇸';
+    } else if (fullText.indexOf('karpathos') !== -1 || fullText.indexOf('grecia') !== -1 || fullText.indexOf('greek') !== -1) {
+      destination = 'Karpathos 🇬🇷';
+    } else if (fullText.indexOf('natale') !== -1) {
+      destination = 'Natale in Famiglia 🎄';
+    } else if (location) {
+      destination = location;
+    }
+
+    try {
+      fetch('/api/current-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: url,
+          caption: caption,
+          year: year,
+          location: location,
+          destination: destination,
+          album: album
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  // --------------------------------------------------- Modal Wi-Fi Ospiti ---
+  var wifiModalOpen = false;
+
+  function openWifiModal() {
+    if (!els.wifiModal) return;
+    wifiModalOpen = true;
+    els.wifiModal.hidden = false;
+
+    var wifi = state.wifi || { ssid: 'Casa Moretti', password: '', guest: true };
+    if (els.wifiSsidVal) els.wifiSsidVal.textContent = wifi.ssid || 'Casa Moretti';
+    if (els.wifiPasswordVal) {
+      if (wifi.password) {
+        els.wifiPasswordVal.textContent = wifi.password;
+        if (els.wifiPasswordRow) els.wifiPasswordRow.style.display = '';
+      } else {
+        els.wifiPasswordVal.textContent = 'Rete Aperta (senza password)';
+        if (els.wifiPasswordRow) els.wifiPasswordRow.style.display = '';
+      }
+    }
+
+    if (els.wifiQrBox) {
+      if (wifi.qrSvg) {
+        els.wifiQrBox.innerHTML = wifi.qrSvg;
+      } else {
+        var iconHtml = window.SmartIcons ? window.SmartIcons.get('wifi') : '📶';
+        els.wifiQrBox.innerHTML = '<span class="wifi-icon-badge">' + iconHtml + '</span>';
+      }
+    }
+  }
+
+  function closeWifiModal() {
+    if (!els.wifiModal) return;
+    wifiModalOpen = false;
+    els.wifiModal.hidden = true;
+  }
+
+  function toggleWifiModal() {
+    if (wifiModalOpen) closeWifiModal();
+    else openWifiModal();
   }
 
   function buildSlide(slide, primaryImg, secondaryImg) {
@@ -1552,6 +1741,17 @@
 
   var lastKeyAt = 0;
   document.addEventListener('keydown', function (e) {
+    // Se il modal del Wi-Fi è aperto, Back, OK o Giallo lo chiudono
+    if (wifiModalOpen) {
+      if (matches(e, ['GoBack', 'BrowserBack', 'Back', 'Escape', 'Backspace'], KEY.BACK) ||
+          matches(e, ['Enter', 'OK', 'Accept'], KEY.OK) ||
+          matches(e, ['ColorF2Yellow', 'Yellow', 'y', 'Y', 'w', 'W'], KEY.YELLOW.concat([87]))) {
+        closeWifiModal();
+        e.preventDefault();
+        return;
+      }
+    }
+
     // Se il modal della telecamera è aperto, Back o OK lo chiudono
     if (reolinkModalOpen) {
       if (matches(e, ['GoBack', 'BrowserBack', 'Back', 'Escape', 'Backspace'], KEY.BACK) ||
@@ -1598,13 +1798,16 @@
         if (uiState.mode === 'autohide' && uiState.visible) resetUiTimer();
         showToast(uiState.visible ? '📺 Pannelli visibili' : '🖼️ Modalità solo foto');
       }
-    } else if (matches(e, ['ColorF2Yellow', 'Yellow', 'y', 'Y'], KEY.YELLOW)) {
-      // 🟡 Tasto Giallo: Toggle Didascalia e info foto
+    } else if (matches(e, ['ColorF2Yellow', 'Yellow', 'y', 'Y', 'w', 'W'], KEY.YELLOW.concat([87]))) {
+      // 🟡 Tasto Giallo o W: Modal Wi-Fi Ospiti QR Code
       if (!e.repeat) {
-        if (els.photoCaption) {
-          els.photoCaption.hidden = !els.photoCaption.hidden;
-          showToast(els.photoCaption.hidden ? 'Didascalia nascosta' : 'Didascalia visibile');
-        }
+        toggleWifiModal();
+      }
+    } else if (matches(e, ['i', 'I'], [73])) {
+      // Tasto 'i': Toggle didascalia e info foto
+      if (!e.repeat && els.photoCaption) {
+        els.photoCaption.hidden = !els.photoCaption.hidden;
+        showToast(els.photoCaption.hidden ? 'Didascalia nascosta' : 'Didascalia visibile');
       }
     } else if (matches(e, ['ColorF3Blue', 'Blue', 'b', 'B'], KEY.BLUE)) {
       // 🔵 Tasto Blu: Foto successiva immediata
@@ -1705,6 +1908,29 @@
     els.reolinkModal.addEventListener('click', function (e) {
       e.stopPropagation();
       closeReolinkModal();
+    });
+  }
+
+  // Click su badge Internet in alto a destra per aprire modal Wi-Fi
+  if (els.haWifiBtn) {
+    els.haWifiBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggleWifiModal();
+    });
+  }
+  // Click chiusura modal Wi-Fi
+  if (els.wifiCloseBtn) {
+    els.wifiCloseBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closeWifiModal();
+    });
+  }
+  if (els.wifiModal) {
+    els.wifiModal.addEventListener('click', function (e) {
+      if (e.target === els.wifiModal) {
+        e.stopPropagation();
+        closeWifiModal();
+      }
     });
   }
 

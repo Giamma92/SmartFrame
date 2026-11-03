@@ -19,6 +19,13 @@ import { getHomeAssistant } from './services/homeassistant.js';
 import { loadSettings, saveSettings, getCurrentTheme } from './services/themes.js';
 import { getPhotos, resolvePhoto, fetchAlbumTitle, fetchGooglePhotos } from './services/photos.js';
 
+let QRCode = null;
+try {
+  QRCode = (await import('qrcode')).default;
+} catch (e) {
+  console.warn('[server] Modulo qrcode non caricato:', e.message);
+}
+
 const app = express();
 const STARTED_AT = new Date().toISOString();
 
@@ -156,6 +163,104 @@ app.get('/api/camera/snapshot', async (_req, res) => {
   }
 });
 
+// Proxy immagini Home Assistant (artwork Now Playing album / copertine)
+app.get('/api/ha-proxy-image', async (req, res) => {
+  const HA_URL = process.env.HA_URL || 'http://localhost:8123';
+  const HA_TOKEN = process.env.HA_TOKEN || '';
+  const imgPath = req.query.path;
+  if (!HA_TOKEN || !imgPath || !imgPath.startsWith('/')) {
+    return res.status(400).send('Parametri non validi');
+  }
+
+  try {
+    const upstream = await fetch(`${HA_URL}${imgPath}`, {
+      headers: { 'Authorization': `Bearer ${HA_TOKEN}` },
+      signal: AbortSignal.timeout(6000)
+    });
+    if (!upstream.ok) {
+      return res.status(upstream.status).send(`Upstream HA ${upstream.status}`);
+    }
+    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    const arrayBuffer = await upstream.arrayBuffer();
+    res.send(Buffer.from(arrayBuffer));
+  } catch (err) {
+    res.status(502).send('Errore proxy immagine HA: ' + err.message);
+  }
+});
+
+// Stato e sensore foto corrente per Alexa e Home Assistant ("Alexa, che foto è?")
+let currentPhotoState = null;
+
+app.post('/api/current-photo', async (req, res) => {
+  try {
+    const p = req.body || {};
+    currentPhotoState = {
+      ...p,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Costruisci frase naturale in italiano per risposta vocale di Alexa
+    let voiceSummary = '';
+    const parts = [];
+    if (p.caption) {
+      parts.push(`La foto sullo schermo mostra ${p.caption}`);
+    } else if (p.destination) {
+      parts.push(`Questa foto è stata scattata a ${p.destination}`);
+    } else if (p.location) {
+      parts.push(`Questa foto è stata scattata a ${p.location}`);
+    } else {
+      parts.push('Questa è una foto della cornice digitale');
+    }
+
+    if (p.year) {
+      parts.push(`nel ${p.year}`);
+    }
+    if (p.album && (!p.caption || !p.caption.toLowerCase().includes(p.album.toLowerCase()))) {
+      parts.push(`dall'album ${p.album}`);
+    }
+    voiceSummary = parts.join(' ') + '.';
+
+    // Sincronizza stato verso Home Assistant (crea/aggiorna sensor.smartframe_foto_corrente)
+    const HA_URL = process.env.HA_URL || 'http://localhost:8123';
+    const HA_TOKEN = process.env.HA_TOKEN || '';
+    if (HA_TOKEN) {
+      const stateTitle = (p.caption || p.destination || p.location || p.album || 'Foto attiva').slice(0, 255);
+      fetch(`${HA_URL}/api/states/sensor.smartframe_foto_corrente`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HA_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          state: stateTitle,
+          attributes: {
+            friendly_name: 'SmartFrame Foto Corrente',
+            icon: 'mdi:image-frame',
+            caption: p.caption || '',
+            destination: p.destination || '',
+            location: p.location || '',
+            year: p.year || '',
+            album: p.album || '',
+            url: p.url || '',
+            voice_summary: voiceSummary,
+            updated_at: new Date().toISOString()
+          }
+        }),
+        signal: AbortSignal.timeout(3000)
+      }).catch(err => console.warn('[ha] Invio sensore foto a HA fallito:', err.message));
+    }
+
+    res.json({ ok: true, summary: voiceSummary });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get('/api/current-photo', (_req, res) => {
+  res.json(currentPhotoState || { state: 'Nessuna foto attiva' });
+});
+
 // ------------------------------------------------- 🎂 Sorpresa compleanno ---
 // Pagina separata dalla cornice: /birthday (gioco + biglietto di auguri).
 // Contenuti personali (config.json + foto) in data/birthday/ → non finiscono
@@ -275,15 +380,28 @@ app.get('/birthday/media/*', (req, res) => {
 });
 
 app.get('/api/data', async (_req, res) => {
-  const [weather, events, photos, ha] = await Promise.allSettled([
+  const [weather, events, photos, ha, settings] = await Promise.allSettled([
     getWeather(),
     getEvents(),
     getPhotos(),
     getHomeAssistant(),
+    loadSettings(),
   ]);
 
   for (const [name, r] of [['meteo', weather], ['calendario', events], ['foto', photos]]) {
     if (r.status === 'rejected' && !r.reason?.state) console.error(`[api] ${name}:`, r.reason?.message);
+  }
+
+  const sVal = settings.status === 'fulfilled' ? settings.value : {};
+  const wifiConfig = sVal?.wifi || { enabled: true, ssid: 'Casa Moretti', password: '', guest: true };
+  let wifiQrSvg = '';
+  if (QRCode && wifiConfig.ssid) {
+    try {
+      const wifiString = `WIFI:T:${wifiConfig.password ? 'WPA' : 'nopass'};S:${wifiConfig.ssid};P:${wifiConfig.password || ''};;`;
+      wifiQrSvg = await QRCode.toString(wifiString, { type: 'svg', margin: 1, width: 200 });
+    } catch (err) {
+      console.warn('[qrcode] Errore generazione SVG:', err.message);
+    }
   }
 
   res.set('Cache-Control', 'no-store').json({
@@ -295,6 +413,7 @@ app.get('/api/data', async (_req, res) => {
     photos: photos.status === 'fulfilled' ? photos.value : [],
     homeAssistant: ha.status === 'fulfilled' ? ha.value : null,
     theme: getCurrentTheme(),
+    wifi: { ...wifiConfig, qrSvg: wifiQrSvg },
     status: {
       weather: statusOf(weather, getWeather),
       calendar: statusOf(events, getEvents),

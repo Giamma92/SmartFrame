@@ -108,6 +108,30 @@ async function fetchHA() {
     const luxSens = get('sensor.myggspray_wrlss_mtn_senso_illuminance_2') || get('sensor.myggspray_wrlss_mtn_senso_illuminance');
     const illuminance = luxSens && !isNaN(parseFloat(luxSens.state)) ? parseFloat(luxSens.state) : null;
 
+    // Now Playing / Media Player attivo (Spotify, Echo, TV Soggiorno, ecc.)
+    let nowPlaying = null;
+    const mediaPlayers = states.filter(s => s.entity_id && s.entity_id.startsWith('media_player.'));
+    const activeMedia = mediaPlayers.find(s => s.state === 'playing' && (s.attributes?.media_title || s.attributes?.entity_picture))
+      || mediaPlayers.find(s => s.state === 'playing');
+
+    if (activeMedia) {
+      const attrs = activeMedia.attributes || {};
+      let pic = attrs.entity_picture || null;
+      if (pic && pic.startsWith('/')) {
+        pic = `/api/ha-proxy-image?path=${encodeURIComponent(pic)}`;
+      }
+      nowPlaying = {
+        entityId: activeMedia.entity_id,
+        title: attrs.media_title || attrs.friendly_name || 'In riproduzione',
+        artist: attrs.media_artist || attrs.media_album_name || '',
+        album: attrs.media_album_name || '',
+        source: attrs.app_name || attrs.source || attrs.friendly_name || 'Media',
+        picture: pic,
+        state: activeMedia.state,
+        volume: attrs.volume_level !== undefined ? Math.round(attrs.volume_level * 100) : null
+      };
+    }
+
     const temp = tempSens && !isNaN(parseFloat(tempSens.state)) ? Math.round(parseFloat(tempSens.state) * 10) / 10 : null;
     const humidity = humSens && !isNaN(parseInt(humSens.state)) ? parseInt(humSens.state) : null;
     const lightsOn = lightsSens && !isNaN(parseInt(lightsSens.state)) ? parseInt(lightsSens.state) : 0;
@@ -116,6 +140,7 @@ async function fetchHA() {
       connected: true,
       greeting,
       presence,
+      nowPlaying,
       temperature: temp,
       humidity,
       co2: co2Val,
