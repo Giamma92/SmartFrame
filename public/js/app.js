@@ -72,6 +72,7 @@
     dimmer: $('dimmer'),
     haPanel: $('ha-panel'),
     haGreeting: $('ha-greeting'),
+    haGreetingBadge: $('ha-greeting-badge'),
     haPresence: $('ha-presence'),
     haTempVal: $('ha-temp-val'),
     haHumVal: $('ha-hum-val'),
@@ -438,12 +439,24 @@
 
     if (els.haGreeting) {
       var g = (ha.greeting || '').replace(/\bCasa\b/gi, '').trim();
-      var homeIcon = window.SmartIcons ? window.SmartIcons.get('home') + ' ' : '🏡 ';
-      els.haGreeting.innerHTML = homeIcon + (g || 'Casa');
+      els.haGreeting.textContent = g || 'Buongiorno';
+    }
+    if (els.haGreetingBadge) {
+      var hr = new Date().getHours();
+      var timeClass = hr >= 5 && hr < 12 ? 'morning' : (hr < 18 ? 'afternoon' : 'evening');
+      els.haGreetingBadge.className = 'ha-greeting-badge ha-greeting-badge--' + timeClass;
+      if (window.SmartIcons) {
+        els.haGreetingBadge.innerHTML = '<span class="icon-slot" data-icon="home">' + window.SmartIcons.get('home') + '</span>';
+      }
     }
     if (els.haPresence) {
-      els.haPresence.textContent = ha.presence || '';
-      els.haPresence.style.display = ha.presence ? '' : 'none';
+      if (ha.presence) {
+        els.haPresence.innerHTML = '<span class="presence-dot"></span>' + ha.presence;
+        els.haPresence.style.display = '';
+      } else {
+        els.haPresence.textContent = 'Casa · Soggiorno';
+        els.haPresence.style.display = '';
+      }
     }
 
     // 1. Temperatura
@@ -491,7 +504,9 @@
 
     // 5. Connessione Internet FRITZ!Box
     if (els.haNetVal) {
-      els.haNetVal.textContent = ha.netOk ? '🟢 Online' : '🔴 Offline';
+      els.haNetVal.innerHTML = ha.netOk
+        ? '<span class="ha-status-badge is-online"><span class="ha-status-dot"></span>Online</span>'
+        : '<span class="ha-status-badge is-offline"><span class="ha-status-dot"></span>Offline</span>';
     }
 
     // 6. Condizionatori
@@ -1112,6 +1127,24 @@
     state.slideTimer = setTimeout(function () { goNext(false); }, state.cfg.slideIntervalSec * 1000);
   }
 
+  var SLIDE_ANIMATIONS = [
+    { in: 'anim-in-zoom-in', out: 'anim-out-zoom-out' },
+    { in: 'anim-in-zoom-out', out: 'anim-out-zoom-in' },
+    { in: 'anim-in-glide-left', out: 'anim-out-glide-left' },
+    { in: 'anim-in-glide-right', out: 'anim-out-glide-right' },
+    { in: 'anim-in-glide-up', out: 'anim-out-glide-up' },
+    { in: 'anim-in-zoom-in', out: 'anim-out-glide-up' }
+  ];
+  var lastAnimIndex = -1;
+  function getRandomSlideAnim() {
+    var idx;
+    do {
+      idx = Math.floor(Math.random() * SLIDE_ANIMATIONS.length);
+    } while (idx === lastAnimIndex && SLIDE_ANIMATIONS.length > 1);
+    lastAnimIndex = idx;
+    return SLIDE_ANIMATIONS[idx];
+  }
+
   function showPhoto(url, manual, attempt) {
     clearTimeout(state.slideTimer);
     var token = ++state.loadToken;
@@ -1134,20 +1167,34 @@
         var incoming = els.slides[1 - state.activeSlide];
         var outgoing = els.slides[state.activeSlide];
         var fade = manual ? MANUAL_FADE_SEC : state.cfg.fadeSec;
+
+        // Selezione casuale animazione entrata/uscita cinematica
+        var anim = manual ? SLIDE_ANIMATIONS[2] : getRandomSlideAnim();
+
+        // Applica classi di partenza per l'animazione
+        incoming.className = 'slide ' + anim.in;
+        outgoing.className = 'slide is-visible ' + anim.out;
+
         incoming.style.transitionDuration = fade + 's';
         outgoing.style.transitionDuration = fade + 's';
 
         buildSlide(incoming, img1, img2);
-        void incoming.offsetWidth;
+        void incoming.offsetWidth; // forza reflow del browser per avviare transizione fluida
+
         incoming.classList.add('is-visible');
         outgoing.classList.remove('is-visible');
+        outgoing.classList.add('is-outgoing');
+
         state.activeSlide = 1 - state.activeSlide;
         updatePhotoCaption(url);
         updatePhotoCommentPopup(url);
 
         setTimeout(function () {
-          if (!outgoing.classList.contains('is-visible')) clearSlide(outgoing);
-        }, fade * 1000 + 300);
+          if (!outgoing.classList.contains('is-visible')) {
+            outgoing.className = 'slide';
+            clearSlide(outgoing);
+          }
+        }, fade * 1000 + 350);
 
         scheduleNext();
       });

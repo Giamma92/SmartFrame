@@ -85,8 +85,13 @@
   <aside id="ha-panel" class="panel panel--top-home" hidden>
     <header class="panel__header">
       <div class="ha-header-title">
-        <h2 id="ha-greeting"><span class="icon-slot" data-icon="home"></span> Casa</h2>
-        <span class="ha-presence" id="ha-presence"></span>
+        <div class="ha-greeting-badge" id="ha-greeting-badge">
+          <span class="icon-slot" data-icon="home"></span>
+        </div>
+        <div class="ha-greeting-texts">
+          <h2 id="ha-greeting">Casa</h2>
+          <span class="ha-presence" id="ha-presence"></span>
+        </div>
       </div>
       <button id="music-indicator" class="music-pill is-muted" title="Musica Lofi">
         <span class="music-icon" id="music-icon-slot"><span class="icon-slot" data-icon="musicOff"></span></span>
@@ -117,7 +122,7 @@
       </div>
       <div class="ha-item">
         <span class="ha-item__label"><span class="icon-slot" data-icon="globe"></span> Internet</span>
-        <span class="ha-item__val" id="ha-net-val">Online</span>
+        <span class="ha-item__val" id="ha-net-val"><span class="ha-status-badge is-online"><span class="ha-status-dot"></span>Online</span></span>
       </div>
       <div class="ha-item">
         <span class="ha-item__label"><span class="icon-slot" data-icon="snowflake"></span> Climatizzatori</span>
