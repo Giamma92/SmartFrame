@@ -430,17 +430,17 @@
     var displayName = currentRadioName || 'Musica';
 
     if (status === 'reconnecting' || status === 'buffering') {
-      if (iconEl) iconEl.textContent = '⏳';
+      if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('clock') : '⏳';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.remove('is-muted');
       els.musicIndicator.title = displayName + ' (connessione in corso...)';
     } else if (audioPlaying) {
-      if (iconEl) iconEl.textContent = '🎵';
+      if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('music') : '🎵';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.remove('is-muted');
       els.musicIndicator.title = displayName + ' attiva (clicca o premi M per silenziare)';
     } else {
-      if (iconEl) iconEl.textContent = '🔇';
+      if (iconEl) iconEl.innerHTML = window.SmartIcons ? window.SmartIcons.get('musicOff') : '🔇';
       if (labelEl) labelEl.textContent = displayName;
       els.musicIndicator.classList.add('is-muted');
       els.musicIndicator.title = displayName + ' mutata (clicca o premi M per riprodurre)';
@@ -460,7 +460,8 @@
 
     if (els.haGreeting) {
       var g = (ha.greeting || '').replace(/\bCasa\b/gi, '').trim();
-      els.haGreeting.textContent = '🏡 ' + (g || 'Casa');
+      var homeIcon = window.SmartIcons ? window.SmartIcons.get('home') + ' ' : '🏡 ';
+      els.haGreeting.innerHTML = homeIcon + (g || 'Casa');
     }
     if (els.haPresence) {
       els.haPresence.textContent = ha.presence || '';
@@ -837,7 +838,8 @@
     state.cfg = cfg;
 
     document.documentElement.style.setProperty('--fade', cfg.fadeSec + 's');
-    document.body.classList.toggle('no-blur', !cfg.panelBlur);
+    var supportsBlur = typeof CSS !== 'undefined' && CSS.supports && (CSS.supports('backdrop-filter', 'blur(10px)') || CSS.supports('-webkit-backdrop-filter', 'blur(10px)'));
+    document.body.classList.toggle('no-blur', !cfg.panelBlur || !supportsBlur);
     updateDimmer(new Date());
 
     // Pixel shift: piccoli spostamenti dei pannelli contro il burn-in
@@ -857,7 +859,11 @@
 
   function renderWeather(w, status) {
     if (!w) {
-      els.weatherIcon.textContent = '🌡️';
+      if (window.SmartIcons) {
+        els.weatherIcon.innerHTML = window.SmartIcons.get('thermometer', 'svg-icon--weather');
+      } else {
+        els.weatherIcon.textContent = '🌡️';
+      }
       els.weatherTemp.textContent = '--°';
       els.weatherDesc.textContent = 'Meteo non disponibile';
       els.weatherMeta.textContent = status && status.message ? status.message : '';
@@ -865,18 +871,24 @@
       return;
     }
     var r = Math.round;
-    els.weatherIcon.textContent = w.icon;
+    if (window.SmartIcons) {
+      els.weatherIcon.innerHTML = window.SmartIcons.getWeather(w.code, w.isDay);
+    } else {
+      els.weatherIcon.textContent = w.icon;
+    }
     els.weatherTemp.textContent = r(w.temperature) + '°';
     els.weatherDesc.textContent = (w.location ? w.location + ' · ' : '') + w.description;
 
     var meta = [];
     if (w.today) meta.push('↑ ' + r(w.today.max) + '°  ↓ ' + r(w.today.min) + '°');
     meta.push('Percepita ' + r(w.apparentTemperature) + '°');
-    meta.push('💧 ' + r(w.humidity) + '%');
+    var dropIcon = window.SmartIcons ? window.SmartIcons.get('droplet') + ' ' : '💧 ';
+    meta.push(dropIcon + r(w.humidity) + '%');
     if (w.today && w.today.precipProb !== null && w.today.precipProb !== undefined) {
-      meta.push('☔ ' + w.today.precipProb + '%');
+      var rainIcon = window.SmartIcons ? window.SmartIcons.get('cloudRain') + ' ' : '☔ ';
+      meta.push(rainIcon + w.today.precipProb + '%');
     }
-    els.weatherMeta.textContent = meta.join('   ·   ');
+    els.weatherMeta.innerHTML = meta.join('   ·   ');
 
     // Previsioni dei prossimi 3 giorni
     clear(els.forecast);
@@ -885,7 +897,13 @@
       var day = parseEventDate(d.date, true)
         .toLocaleDateString(state.cfg.locale, { weekday: 'short' }).replace('.', '');
       li.appendChild(el('div', 'f-day', day));
-      li.appendChild(el('div', 'f-icon', d.icon));
+      var fIcon = el('div', 'f-icon');
+      if (window.SmartIcons) {
+        fIcon.innerHTML = window.SmartIcons.getWeather(d.code, true);
+      } else {
+        fIcon.textContent = d.icon;
+      }
+      li.appendChild(fIcon);
       var t = el('div', 'f-temp', r(d.max) + '° ');
       t.appendChild(el('span', 'f-min', r(d.min) + '°'));
       li.appendChild(t);
@@ -1598,6 +1616,38 @@
 
   document.addEventListener('mousemove', handleUserActivity);
   document.addEventListener('touchstart', handleUserActivity);
+
+  // Idratazione icone SVG vettoriali
+  function hydrateIconSlots() {
+    if (!window.SmartIcons) return;
+    var slots = document.querySelectorAll('.icon-slot[data-icon]');
+    for (var i = 0; i < slots.length; i++) {
+      var iconName = slots[i].getAttribute('data-icon');
+      if (iconName) slots[i].innerHTML = window.SmartIcons.get(iconName);
+    }
+  }
+  hydrateIconSlots();
+
+  // Telemetria client TV silenciosa per diagnostica
+  (function sendClientTelemetry() {
+    try {
+      var ua = navigator.userAgent || '';
+      var isHisense = /Hisense|VIDAA|Odin/i.test(ua);
+      var tvName = isHisense ? 'Hisense Smart TV (VIDAA)' : (/Tizen/i.test(ua) ? 'Samsung (Tizen)' : (/webOS/i.test(ua) ? 'LG (webOS)' : 'Browser Desktop/Mobile'));
+      var supportsBlur = typeof CSS !== 'undefined' && CSS.supports && (CSS.supports('backdrop-filter', 'blur(10px)') || CSS.supports('-webkit-backdrop-filter', 'blur(10px)'));
+      fetch('/api/diagnostics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          browserName: tvName,
+          userAgent: ua,
+          viewport: { width: window.innerWidth, height: window.innerHeight },
+          screen: { width: screen.width, height: screen.height, dpr: window.devicePixelRatio || 1 },
+          features: { backdropFilter: supportsBlur }
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  })();
 
   setupLiveSync();
   pollSettingsVersion();

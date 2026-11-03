@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#ff5fa2">
+  <meta name="robots" content="noindex">
+  <title>🎂 Una sorpresa per te</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@500;700&display=swap">
+  <link rel="stylesheet" href="/birthday/birthday.css?v=1">
+</head>
+<body>
+  <!-- Sfondo animato -->
+  <div class="bg" aria-hidden="true"></div>
+  <div id="balloons" class="balloons" aria-hidden="true"></div>
+  <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+  <!-- Barra superiore: progresso + audio -->
+  <header class="topbar" id="topbar" hidden>
+    <div class="progress" id="progress"></div>
+    <button class="icon-btn" id="mute-btn" data-nav aria-label="Audio">🔊</button>
+  </header>
+
+  <main id="app">
+    <!-- 0. Caricamento -->
+    <section class="screen active" id="s-loading">
+      <div class="big-emoji bounce">🎁</div>
+    </section>
+
+    <!-- 1. Countdown -->
+    <section class="screen" id="s-countdown">
+      <div class="card-box">
+        <div class="big-emoji wiggle">🎁</div>
+        <h1 id="cd-title"></h1>
+        <div class="countdown" id="cd-timer">
+          <div><b id="cd-d">0</b><span>giorni</span></div>
+          <div><b id="cd-h">0</b><span>ore</span></div>
+          <div><b id="cd-m">0</b><span>minuti</span></div>
+          <div><b id="cd-s">0</b><span>secondi</span></div>
+        </div>
+        <p id="cd-text"></p>
+        <button class="btn" id="cd-start" data-nav hidden>Apri la sorpresa 🎉</button>
+      </div>
+    </section>
+
+    <!-- 2. Intro -->
+    <section class="screen" id="s-intro">
+      <div class="card-box">
+        <div class="big-emoji cake">🎂</div>
+        <h1 id="intro-title"></h1>
+        <p id="intro-text" class="pre"></p>
+        <button class="btn" id="intro-btn" data-nav></button>
+      </div>
+    </section>
+
+    <!-- 3. Quiz -->
+    <section class="screen" id="s-quiz">
+      <div class="card-box wide">
+        <h2 id="quiz-title"></h2>
+        <div class="quiz-counter" id="quiz-counter"></div>
+        <div id="quiz-question-wrap">
+          <h1 id="quiz-question" class="question"></h1>
+          <div class="options" id="quiz-options"></div>
+          <div class="feedback" id="quiz-feedback"></div>
+        </div>
+        <div id="quiz-reveal" class="reveal" hidden>
+          <div class="polaroid pop-in"><div class="photo" id="quiz-photo"></div><div class="caption" id="quiz-caption"></div></div>
+          <button class="btn" id="quiz-next" data-nav>Avanti ➜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Memory -->
+    <section class="screen" id="s-memory">
+      <div class="card-box wide">
+        <h2 id="mem-title"></h2>
+        <p id="mem-text" class="small"></p>
+        <div class="memory-grid" id="mem-grid"></div>
+        <div class="mem-done" id="mem-done" hidden>
+          <p id="mem-win" class="win"></p>
+          <button class="btn" id="mem-next" data-nav>Avanti ➜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Gratta e vinci -->
+    <section class="screen" id="s-scratch">
+      <div class="card-box wide">
+        <h2 id="sc-title"></h2>
+        <p id="sc-text" class="small"></p>
+        <div class="scratch-grid" id="sc-grid"></div>
+        <button class="btn" id="sc-next" data-nav hidden>Avanti ➜</button>
+      </div>
+    </section>
+
+    <!-- 6. Biglietto -->
+    <section class="screen" id="s-card">
+      <div class="envelope-wrap" id="env-wrap">
+        <div class="envelope" id="envelope" data-nav tabindex="0">
+          <div class="env-back"></div>
+          <div class="letter"><span>💖</span><span class="hand">Per te</span></div>
+          <div class="env-front"></div>
+          <div class="env-flap"></div>
+          <div class="env-seal">💌</div>
+        </div>
+        <p class="hint" id="env-hint">Premi per aprire la busta</p>
+      </div>
+      <div class="card-box paper" id="letter-full" hidden>
+        <h1 id="card-title" class="hand"></h1>
+        <p id="card-message" class="hand pre message"></p>
+        <p id="card-signature" class="hand pre signature"></p>
+        <button class="btn" id="card-next" data-nav hidden>C'è ancora una sorpresa... ➜</button>
+      </div>
+    </section>
+
+    <!-- 7. Indizio finale -->
+    <section class="screen" id="s-clue">
+      <div class="card-box">
+        <div class="big-emoji wiggle">🗝️</div>
+        <h1 id="clue-title"></h1>
+        <p id="clue-riddle" class="riddle pre"></p>
+        <p id="clue-hint" class="hint-box" hidden></p>
+        <div class="row">
+          <button class="btn secondary" id="clue-hint-btn" data-nav>Aiutino 💡</button>
+          <button class="btn" id="clue-btn" data-nav></button>
+        </div>
+        <p id="clue-final" class="win" hidden></p>
+        <button class="btn link" id="replay-btn" data-nav hidden>Rigioca dall'inizio ↺</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/birthday/birthday.js?v=1"></script>
+</body>
+</html>

@@ -1,7 +1,15 @@
 /* =====================================================================
    Smart Frame - Layout con Casa in Alto a Destra e Avvisi in Alto a Sinistra
    ===================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+/* Font Locale Plus Jakarta Sans (ottimizzato per Smart TV, caricamento istantaneo locale) */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   --fade: 2.5s;
@@ -726,3 +734,78 @@ html, body {
   transition: opacity 60s linear;
   z-index: 100;
 }
+
+/* =====================================================================
+   Icone SVG Vettoriali & Ottimizzazioni Smart TV
+   ===================================================================== */
+.svg-icon {
+  display: inline-block;
+  width: 1.18em;
+  height: 1.18em;
+  vertical-align: -0.18em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.svg-icon--weather {
+  width: 2.2rem;
+  height: 2.2rem;
+  vertical-align: middle;
+  stroke-width: 1.8;
+  color: #fbbf24;
+}
+
+.forecast__icon .svg-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  vertical-align: middle;
+  stroke-width: 1.8;
+}
+
+.icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background-color: #ef4444;
+  margin-right: 0.35rem;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+  animation: pulseLive 1.8s infinite ease-in-out;
+}
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* =====================================================================
+   Ottimizzazione Prestazioni GPU per TV Hisense (Fallback No-Blur)
+   Evita il ricalcolo continuo del gaussian blur a 60 FPS sulla GPU della TV
+   ===================================================================== */
+body.no-blur .panel,
+body.no-blur .panel--top-home,
+body.no-blur .panel--clock,
+body.no-blur .panel--events,
+body.no-blur .top-left-alerts,
+body.no-blur .reolink-pip,
+body.no-blur .photo-comment-popup .comment-bubble,
+body.no-blur .photo-caption,
+body.no-blur .badge,
+body.no-blur .toast {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(14, 18, 26, 0.88) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+

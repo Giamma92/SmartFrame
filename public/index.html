@@ -48,9 +48,9 @@
     <div id="top-left-alerts" class="top-left-alerts"></div>
     <div id="reolink-pip" class="reolink-pip" hidden>
       <div class="reolink-header">
-        <span class="reolink-badge">🔴 LIVE</span>
+        <span class="reolink-badge"><span class="live-dot"></span>LIVE</span>
         <span class="reolink-title">Webcam Soggiorno</span>
-        <button class="reolink-expand-btn" id="reolink-expand-btn" title="Espandi a schermo intero">⛶</button>
+        <button class="reolink-expand-btn" id="reolink-expand-btn" title="Espandi a schermo intero"><span class="icon-slot" data-icon="expand"></span></button>
       </div>
       <div class="reolink-view">
         <img id="reolink-img" alt="Reolink Live" />
@@ -61,13 +61,13 @@
   <!-- Modal telecamera a tutto schermo -->
   <div id="reolink-modal" class="reolink-modal" hidden>
     <img id="reolink-modal-img" alt="Reolink Fullscreen" />
-    <button id="reolink-close-modal" class="reolink-close-btn">✕ Chiudi (Esc / Back)</button>
+    <button id="reolink-close-modal" class="reolink-close-btn"><span class="icon-slot" data-icon="close"></span> Chiudi (Esc / Back)</button>
   </div>
 
   <!-- Popup Elegante Commenti & Didascalie Foto -->
   <div id="photo-comment-popup" class="photo-comment-popup" hidden>
     <div class="comment-bubble">
-      <span class="comment-icon">💬</span>
+      <span class="comment-icon" id="comment-icon-slot"><span class="icon-slot" data-icon="chat"></span></span>
       <div class="comment-body">
         <div id="photo-comment-author" class="comment-author" hidden></div>
         <div id="photo-comment-text" class="comment-text"></div>
@@ -77,7 +77,7 @@
 
   <!-- Didascalia e info foto in sovrimpressione -->
   <div id="photo-caption" class="photo-caption" hidden>
-    <span id="photo-memory-badge" class="memory-badge" hidden>🗓️ Accadde Oggi</span>
+    <span id="photo-memory-badge" class="memory-badge" hidden><span class="icon-slot" data-icon="sparkles"></span> Accadde Oggi</span>
     <span id="photo-caption-text"></span>
   </div>
 
@@ -85,46 +85,46 @@
   <aside id="ha-panel" class="panel panel--top-home" hidden>
     <header class="panel__header">
       <div class="ha-header-title">
-        <h2 id="ha-greeting">🏡 Casa</h2>
+        <h2 id="ha-greeting"><span class="icon-slot" data-icon="home"></span> Casa</h2>
         <span class="ha-presence" id="ha-presence"></span>
       </div>
       <button id="music-indicator" class="music-pill is-muted" title="Musica Lofi">
-        <span class="music-icon">🔇</span>
+        <span class="music-icon" id="music-icon-slot"><span class="icon-slot" data-icon="musicOff"></span></span>
         <span class="music-label">Lofi</span>
       </button>
     </header>
 
     <div class="ha-grid">
       <div class="ha-item">
-        <span class="ha-item__label">🌡️ Temperatura</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="thermometer"></span> Temperatura</span>
         <span class="ha-item__val" id="ha-temp-val">--°</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">💧 Umidità</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="droplet"></span> Umidità</span>
         <span class="ha-item__val" id="ha-hum-val">--%</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">🍃 CO2</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="leaf"></span> CO2</span>
         <span class="ha-item__val" id="ha-co2-val">-- ppm</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">🌫️ Polveri PM2.5</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="pm25"></span> Polveri PM2.5</span>
         <span class="ha-item__val" id="ha-pm25-val">-- μg/m³</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">💡 Luci</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="lightbulb"></span> Luci</span>
         <span class="ha-item__val" id="ha-lights-val">Spente</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">🌐 Internet</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="globe"></span> Internet</span>
         <span class="ha-item__val" id="ha-net-val">Online</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">❄️ Climatizzatori</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="snowflake"></span> Climatizzatori</span>
         <span class="ha-item__val" id="ha-ac-val">Spenti</span>
       </div>
       <div class="ha-item">
-        <span class="ha-item__label">🫧 Elettrodomestici</span>
+        <span class="ha-item__label"><span class="icon-slot" data-icon="plug"></span> Elettrodomestici</span>
         <span class="ha-item__val" id="ha-appliances-val">Spente</span>
       </div>
     </div>
@@ -154,7 +154,7 @@
     <!-- In basso a destra: prossimi impegni Google Calendar -->
     <section id="events-panel" class="panel panel--events">
       <header class="panel__header">
-        <h2>📅 Prossimi impegni</h2>
+        <h2><span class="icon-slot" data-icon="calendar"></span> Prossimi impegni</h2>
         <span id="events-status" class="panel__status"></span>
       </header>
       <ul id="events" class="events"></ul>
@@ -162,14 +162,15 @@
   </main>
 
   <!-- Indicatori di stato -->
-  <div id="pause-badge" class="badge badge--pause" hidden>⏸ In pausa</div>
+  <div id="pause-badge" class="badge badge--pause" hidden><span class="icon-slot" data-icon="pause"></span> In pausa</div>
   <div id="toast" class="toast" hidden></div>
-  <div id="offline" class="badge badge--offline" hidden>⚠ Connessione persa</div>
+  <div id="offline" class="badge badge--offline" hidden><span class="icon-slot" data-icon="warning"></span> Connessione persa</div>
 
   <!-- Oscuramento notturno -->
   <div id="dimmer" class="dimmer"></div>
 
-  <script src="js/app.js?v=13"></script>
+  <script src="js/icons.js?v=1"></script>
+  <script src="js/app.js?v=14"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

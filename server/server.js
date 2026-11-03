@@ -7,9 +7,11 @@
  *   GET /photos/<file>   -> immagini (ridimensionate se "sharp" è presente)
  *   GET /auth            -> avvia l'autorizzazione Google Calendar (solo da localhost)
  *   GET /oauth2callback  -> ritorno da Google dopo il consenso
+ *   GET /birthday        -> sorpresa di compleanno (gioco + biglietto), separata dalla cornice
  */
 import express from 'express';
 import path from 'node:path';
+import fsp from 'node:fs/promises';
 import { config, ROOT_DIR } from './config.js';
 import { getAuthUrl, handleOAuthCallback, getEvents } from './services/calendar.js';
 import { getWeather } from './services/weather.js';
@@ -154,6 +156,35 @@ app.get('/api/camera/snapshot', async (_req, res) => {
   }
 });
 
+// ------------------------------------------------- 🎂 Sorpresa compleanno ---
+// Pagina separata dalla cornice: /birthday (gioco + biglietto di auguri).
+// Contenuti personali (config.json + foto) in data/birthday/ → non finiscono
+// nello slideshow né su git. Se manca config.json si usa l'esempio.
+const BIRTHDAY_DIR = path.join(ROOT_DIR, 'data', 'birthday');
+
+app.get(['/birthday', '/birthday/'], (_req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'index.html'));
+});
+
+app.get('/api/birthday', async (_req, res) => {
+  for (const file of [path.join(BIRTHDAY_DIR, 'config.json'), path.join(ROOT_DIR, 'public', 'birthday', 'config.example.json')]) {
+    try {
+      const json = JSON.parse(await fsp.readFile(file, 'utf8'));
+      json._source = file.includes('example') ? 'example' : 'custom';
+      return res.set('Cache-Control', 'no-store').json(json);
+    } catch (err) {
+      if (err.code !== 'ENOENT') console.error('[birthday] config non valida:', file, err.message);
+    }
+  }
+  res.status(500).json({ error: 'Configurazione compleanno mancante' });
+});
+
+app.get('/birthday/media/*', (req, res) => {
+  const abs = path.resolve(BIRTHDAY_DIR, req.params[0]);
+  if (!abs.startsWith(BIRTHDAY_DIR + path.sep)) return res.sendStatus(404);
+  res.sendFile(abs, (err) => { if (err && !res.headersSent) res.sendStatus(404); });
+});
+
 app.get('/api/data', async (_req, res) => {
   const [weather, events, photos, ha] = await Promise.allSettled([
     getWeather(),
@@ -185,6 +216,28 @@ app.get('/api/data', async (_req, res) => {
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, startedAt: STARTED_AT, uptimeSec: Math.round(process.uptime()) });
+});
+
+// ----------------------------------------------------- Telemetria TV & Diagnostica ---
+let lastDiagnostics = null;
+
+app.post('/api/diagnostics', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const ua = req.headers['user-agent'] || '';
+  lastDiagnostics = {
+    ip,
+    userAgent: ua,
+    receivedAt: new Date().toISOString(),
+    ...req.body,
+  };
+  const bName = req.body?.browserName || 'Client';
+  const vp = req.body?.viewport ? `${req.body.viewport.width}x${req.body.viewport.height}` : 'N/D';
+  console.log(`[tv-diagnostics] Dati ricevuti da ${ip} (${bName}) - Viewport: ${vp}`);
+  res.json({ ok: true });
+});
+
+app.get('/api/diagnostics', (_req, res) => {
+  res.json(lastDiagnostics || { status: 'no_data', message: 'Nessun report diagnostico ancora registrato.' });
 });
 
 // ------------------------------------------------------------ Foto ---

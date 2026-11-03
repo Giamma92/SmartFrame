@@ -34,7 +34,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // Per API, SSE e stream radio/video: sempre diretta su rete
-  if (url.pathname.startsWith('/api') || url.pathname.includes('/stream') || event.request.headers.get('accept')?.includes('text/event-stream')) {
+  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/birthday') || url.pathname.includes('/stream') || event.request.headers.get('accept')?.includes('text/event-stream')) {
     return;
   }
 
