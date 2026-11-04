@@ -720,6 +720,16 @@
         <button type="button" class="crop-preset-btn" data-preset="50% 50%">🎯 Centro</button>
         <button type="button" class="crop-preset-btn" data-preset="50% 85%">🔻 In basso</button>
       </div>
+      <div style="width:100%; margin:8px 0 12px; background:var(--input); border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:10px 12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:0.84rem;">
+          <span style="font-weight:600; color:var(--text);">🔍 Zoom Foto:</span>
+          <span id="crop-zoom-label" style="color:var(--yellow); font-weight:700;">100% (Cover)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="range" id="crop-zoom-slider" min="60" max="160" step="5" value="100" style="flex:1; accent-color:var(--pink);">
+          <button type="button" class="btn secondary" id="btn-zoom-fit" style="padding:4px 8px; font-size:0.75rem;">Adatta intera</button>
+        </div>
+      </div>
       <div style="display:flex; gap:10px; width:100%; margin-top:8px;">
         <button type="button" class="btn secondary" id="btn-crop-cancel" style="flex:1;">Annulla</button>
         <button type="button" class="btn" id="btn-crop-apply" style="flex:1;">Applica ✓</button>
@@ -842,8 +852,9 @@
           var cropHtml =
             '<div class="crop-row">' +
               '<span>Inquadratura Polaroid:</span>' +
-              '<button type="button" class="btn-edit-crop" data-crop-edit="' + qi + '">✂️ Regola inquadratura foto</button>' +
+              '<button type="button" class="btn-edit-crop" data-crop-edit="' + qi + '">✂️ Regola inquadratura & Zoom</button>' +
               '<input type="hidden" class="q-crop-val" data-qi="' + qi + '" value="' + escapeAttr(cropVal) + '">' +
+              '<input type="hidden" class="q-zoom-val" data-qi="' + qi + '" value="' + escapeAttr(q.zoom || 'cover') + '">' +
             '</div>';
 
           box.innerHTML =
@@ -948,6 +959,7 @@
       var activeCropQi = null;
       var curCropX = 50;
       var curCropY = 50;
+      var curCropZoom = 'cover';
 
       function openCropModal(qi) {
         activeCropQi = qi;
@@ -957,11 +969,27 @@
           showToast('Nessuna foto associata a questa domanda. Carica prima l\'album!', true);
           return;
         }
-        var hiddenInput = document.querySelector('.q-crop-val[data-qi="' + qi + '"]');
-        var val = hiddenInput ? hiddenInput.value : '50% 50%';
+        var hiddenCrop = document.querySelector('.q-crop-val[data-qi="' + qi + '"]');
+        var val = hiddenCrop ? hiddenCrop.value : '50% 50%';
         var parts = val.replace(/%/g, '').split(' ');
         curCropX = parseFloat(parts[0]) || 50;
         curCropY = parseFloat(parts[1]) || 50;
+
+        var hiddenZoom = document.querySelector('.q-zoom-val[data-qi="' + qi + '"]');
+        curCropZoom = hiddenZoom ? hiddenZoom.value : 'cover';
+
+        var slider = $('crop-zoom-slider');
+        if (curCropZoom === 'contain') {
+          slider.value = 75;
+          $('crop-zoom-label').textContent = 'Adatta (Intera)';
+        } else if (curCropZoom.indexOf('%') !== -1) {
+          var zNum = parseInt(curCropZoom, 10) || 100;
+          slider.value = zNum;
+          $('crop-zoom-label').textContent = zNum + '%';
+        } else {
+          slider.value = 100;
+          $('crop-zoom-label').textContent = '100% (Cover)';
+        }
 
         var box = $('crop-preview-box');
         box.style.backgroundImage = 'url("' + imgUrl + '")';
@@ -972,6 +1000,14 @@
       function updateCropCrosshair() {
         var box = $('crop-preview-box');
         box.style.backgroundPosition = curCropX + '% ' + curCropY + '%';
+        var bgSize = 'cover';
+        if (curCropZoom === 'contain') {
+          bgSize = 'contain';
+        } else if (curCropZoom.indexOf('%') !== -1) {
+          bgSize = curCropZoom;
+        }
+        box.style.backgroundSize = bgSize;
+
         var ch = $('crop-crosshair');
         ch.style.left = curCropX + '%';
         ch.style.top = curCropY + '%';
@@ -982,6 +1018,25 @@
           btn.classList.toggle('active', pVal === Math.round(curCropX) + '% ' + Math.round(curCropY) + '%');
         });
       }
+
+      $('crop-zoom-slider').addEventListener('input', function () {
+        var val = parseInt(this.value, 10);
+        if (val === 100) {
+          curCropZoom = 'cover';
+          $('crop-zoom-label').textContent = '100% (Cover)';
+        } else {
+          curCropZoom = val + '%';
+          $('crop-zoom-label').textContent = val + '%';
+        }
+        updateCropCrosshair();
+      });
+
+      $('btn-zoom-fit').onclick = function () {
+        curCropZoom = 'contain';
+        $('crop-zoom-slider').value = 75;
+        $('crop-zoom-label').textContent = 'Adatta (Intera)';
+        updateCropCrosshair();
+      };
 
       function setCropFromCoords(e) {
         var box = $('crop-preview-box');
@@ -1022,15 +1077,23 @@
       $('btn-crop-apply').onclick = function () {
         $('crop-modal').style.display = 'none';
         if (activeCropQi !== null) {
-          var hiddenInput = document.querySelector('.q-crop-val[data-qi="' + activeCropQi + '"]');
+          var hiddenCrop = document.querySelector('.q-crop-val[data-qi="' + activeCropQi + '"]');
           var cropString = curCropX + '% ' + curCropY + '%';
-          if (hiddenInput) hiddenInput.value = cropString;
+          if (hiddenCrop) hiddenCrop.value = cropString;
+
+          var hiddenZoom = document.querySelector('.q-zoom-val[data-qi="' + activeCropQi + '"]');
+          if (hiddenZoom) hiddenZoom.value = curCropZoom;
+
           if (cfg.quiz && cfg.quiz.questions && cfg.quiz.questions[activeCropQi]) {
             cfg.quiz.questions[activeCropQi].crop = cropString;
+            cfg.quiz.questions[activeCropQi].zoom = curCropZoom;
           }
           var thumb = document.querySelectorAll('.quiz-thumb')[activeCropQi];
-          if (thumb) thumb.style.backgroundPosition = cropString;
-          showToast('Inquadratura impostata al ' + curCropX + '%, ' + curCropY + '%! Ricorda di salvare in fondo.');
+          if (thumb) {
+            thumb.style.backgroundPosition = cropString;
+            thumb.style.backgroundSize = curCropZoom === 'contain' ? 'contain' : (curCropZoom.indexOf('%') !== -1 ? curCropZoom : 'cover');
+          }
+          showToast('Inquadratura e Zoom salvati! Ricorda di cliccare Salva in fondo.');
         }
       };
 
@@ -1121,12 +1184,15 @@
           var ans = checkedRadio ? Number(checkedRadio.value) : 0;
           var cropHidden = cardEl.querySelector('.q-crop-val');
           var cropVal = cropHidden ? cropHidden.value : '50% 50%';
+          var zoomHidden = cardEl.querySelector('.q-zoom-val');
+          var zoomVal = zoomHidden ? zoomHidden.value : 'cover';
           newQuestions.push({
             question: qText,
             options: opts,
             answer: ans,
             caption: qCap,
-            crop: cropVal
+            crop: cropVal,
+            zoom: zoomVal
           });
         }
         cfg.quiz.questions = newQuestions;

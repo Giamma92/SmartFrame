@@ -54,7 +54,7 @@
   }
 
   /** Imposta una foto come sfondo; se non esiste mostra l'emoji di riserva. */
-  function setPhoto(el, file, emoji, pos) {
+  function setPhoto(el, file, emoji, pos, zoom) {
     el.style.backgroundImage = '';
     var bgPos = 'center center';
     if (typeof pos === 'string' && pos.indexOf('%') !== -1) {
@@ -65,6 +65,13 @@
       bgPos = 'center bottom';
     }
     el.style.backgroundPosition = bgPos;
+    var bgSize = 'cover';
+    if (zoom === 'contain' || zoom === 'fit') {
+      bgSize = 'contain';
+    } else if (typeof zoom === 'number' || (typeof zoom === 'string' && zoom.indexOf('%') !== -1)) {
+      bgSize = zoom.toString().indexOf('%') !== -1 ? zoom : zoom + '%';
+    }
+    el.style.backgroundSize = bgSize;
     el.classList.remove('portrait');
     el.textContent = emoji || '💖';
     if (!file) return;
@@ -544,7 +551,8 @@
         $('quiz-question-wrap').hidden = true;
         $('quiz-reveal').hidden = false;
         var pos = q.crop || 'center center';
-        setPhoto($('quiz-photo'), q.photo, q.emoji || '💖', pos);
+        var zoom = q.zoom || 'cover';
+        setPhoto($('quiz-photo'), q.photo, q.emoji || '💖', pos, zoom);
         $('quiz-caption').textContent = fill(q.caption || '');
         // ri-avvia l'animazione della polaroid
         var pol = $('quiz-reveal').querySelector('.polaroid');
