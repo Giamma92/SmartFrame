@@ -73,6 +73,7 @@
     }
     el.style.backgroundSize = bgSize;
     el.classList.remove('portrait');
+    if (el.parentNode && el.parentNode.classList) el.parentNode.classList.remove('is-portrait');
     el.textContent = emoji || '💖';
     if (!file) return;
     var src = media(file);
@@ -82,10 +83,11 @@
       var ratio = img.naturalHeight / img.naturalWidth;
       if (ratio > 1.15) {
         el.classList.add('portrait');
+        if (el.parentNode && el.parentNode.classList) el.parentNode.classList.add('is-portrait');
         if (ratio > 1.35) {
           // Adatta larghezza e altezza dinamicamente alle proporzioni reali (ottimizzato per TV 16:9)
-          var targetH = 43;
-          var targetW = Math.max(27, Math.min(38, targetH / ratio));
+          var targetH = 40;
+          var targetW = Math.max(26, Math.min(36, targetH / ratio));
           el.style.width = 'calc(var(--u) * ' + targetW.toFixed(1) + ')';
           el.style.height = 'calc(var(--u) * ' + targetH + ')';
         }
@@ -634,9 +636,15 @@
         var zoom = q.zoom || 'cover';
         setPhoto($('quiz-photo'), q.photo, q.emoji || '💖', pos, zoom);
         $('quiz-caption').textContent = fill(q.caption || '');
-        // ri-avvia l'animazione della polaroid
+        if ($('quiz-polaroid-tag')) {
+          $('quiz-polaroid-tag').textContent = '♡ Ricordo #' + (qi + 1) + ' di ' + c.questions.length;
+        }
+        // Alterna tema pastello e inclinazione della polaroid
         var pol = $('quiz-reveal').querySelector('.polaroid');
-        pol.classList.remove('pop-in'); void pol.offsetWidth; pol.classList.add('pop-in');
+        var themes = ['', 'theme-lilac', 'theme-sky'];
+        pol.className = 'polaroid ' + themes[qi % themes.length] + (qi % 2 === 1 ? ' tilt-right' : '');
+        void pol.offsetWidth;
+        pol.classList.add('pop-in');
         focusFirst($('quiz-next'));
       }, 900);
     } else {
