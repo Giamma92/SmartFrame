@@ -14,36 +14,78 @@
 
   "intro": {
     "title": "Tanti auguri, {name}! 🎂",
-    "text": "Buon compleanno {fullName}!\nOggi è il tuo giorno e ho preparato un piccolo gioco solo per te.\nSupera le prove per sbloccare la sorpresa finale... pronta?",
+    "text": "Buon compleanno {fullName}!\nOggi è il tuo giorno speciale e ho preparato un piccolo gioco tutto su di te.\nSupera le prove per sbloccare la sorpresa finale... pronta?",
     "button": "Iniziamo! 🚀"
   },
 
   "quiz": {
-    "title": "Quanto ti ricordi di noi, {name}? 💭",
+    "title": "I grandi misteri di Pucla! 💭",
     "questions": [
       {
-        "question": "Dove ci siamo dati il primo bacio?",
-        "options": ["Al mare", "Sotto casa tua", "Al cinema", "In macchina"],
+        "question": "Qual è il classico rituale della buonanotte di Francesca?",
+        "options": [
+          "Meditazione zen e tisana rilassante",
+          "Crollare addormentata alle 21:30 col telefono acceso in mano",
+          "Maratona di 3 film d'azione fino alle 3 di notte",
+          "Mettere il telefono in modalità aereo e riporlo nel cassetto"
+        ],
         "answer": 1,
-        "caption": "Esatto! E da lì non ti ho più lasciata andare ❤️"
+        "caption": "La bella addormentata più dolce del mondo (e io che faccio da custode dello schermo!) 📱💤"
       },
       {
-        "question": "Qual è stato il nostro primo viaggio insieme?",
-        "options": ["Parigi", "Roma", "Barcellona", "Amsterdam"],
+        "question": "Cosa spinge veramente Francesca a saltare giù dal letto la mattina puntualissima?",
+        "options": [
+          "La voglia irrefrenabile di fare jogging all'alba",
+          "La paura cosmica di non trovare parcheggio!",
+          "Il profumo del caffè appena fatto",
+          "La passione segreta per il traffico delle 7:30"
+        ],
+        "answer": 1,
+        "caption": "Pilota provetta sempre a caccia del parcheggio perfetto! 🚗💨"
+      },
+      {
+        "question": "Come affronta Francesca la 'to-do list' delle cose da fare?",
+        "options": [
+          "Pianifica tutto con 6 mesi di anticipo",
+          "Rimanda un pochino... e poi parte in modalità TURBO facendo 100 cose insieme!",
+          "Delega tutto a qualcun altro",
+          "Fa una cosa sola al giorno, con calma olimpica"
+        ],
+        "answer": 1,
+        "caption": "Quando ti metti in testa una cosa non ti ferma più nessuno: un vero ciclone! 🌪️💪"
+      },
+      {
+        "question": "Qual è il talento indiscusso di Pucla che a casa ci fa fare sempre la scarpetta?",
+        "options": [
+          "Ordinare cibo da asporto spacciandolo per suo",
+          "Cucinare cenette deliziose e sfornare dolci pazzeschi con tutto il suo amore",
+          "Bruciare l'acqua della pasta",
+          "Mangiare solo insalatine scondite"
+        ],
+        "answer": 1,
+        "caption": "MasterChef del mio cuore: i tuoi dolci (e le tue cenette) sono imbattibili! 👩‍🍳🎂"
+      },
+      {
+        "question": "Mettiamo alla prova il coraggio della festeggiata: qual è la sua kryptonite segreta?",
+        "options": [
+          "I film horror splatter",
+          "Il buio completo",
+          "La sala d'attesa del dentista!",
+          "I cagnolini piccoli e morbidi"
+        ],
         "answer": 2,
-        "caption": "Che ricordi meravigliosi insieme 🌞"
+        "caption": "Tranquilla Pucla, oggi niente trapani... solo festeggiamenti e coccole! 🦸‍♀️❤️"
       },
       {
-        "question": "Qual è il soprannome più bello del mondo?",
-        "options": ["Pucla", "Cucciola", "Topolina", "Stellina"],
+        "question": "Oggi Pucla compie gli anni: qual è la verità scientifica sul suo conto?",
+        "options": [
+          "Pensa sempre prima a far star bene tutti gli altri, ed è la persona più speciale del mondo!",
+          "Da oggi pretenderà la pensione e sconti over-60",
+          "Inizierà a lamentarsi del meteo e dei dolori articolari",
+          "Diventerà improvvisamente un'egoista antipatica"
+        ],
         "answer": 0,
-        "caption": "La mia {name} preferita 💛"
-      },
-      {
-        "question": "Cosa ordiniamo SEMPRE quando vogliamo festeggiare?",
-        "options": ["Sushi", "Pizza", "Hamburger", "Pokè"],
-        "answer": 0,
-        "caption": "Sempre una certezza 🍣"
+        "caption": "Il tuo cuore grande per la famiglia e per chi ami è il regalo più bello. Tanti auguri amore mio! 💝✨"
       }
     ],
     "wrong": ["Mmm... ritenta Pucla! 😜", "Fuochino! 🔥", "Ma come?! Riprova 🙈", "Quasi... dai! 💪"]
