@@ -1,11 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 110" width="110" height="110">
-  <defs>
-    <filter id="shadow-m" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
-    </filter>
-  </defs>
   <!-- Cappuccio Rosa con Orecchie Lunghe -->
-  <path d="M 55,24 C 36,24 22,40 22,66 C 22,86 38,98 55,98 C 72,98 88,86 88,66 C 88,40 74,24 55,24 Z" fill="#ff7fa8" stroke="#222222" stroke-width="4" filter="url(#shadow-m)"/>
+  <path d="M 55,24 C 36,24 22,40 22,66 C 22,86 38,98 55,98 C 72,98 88,86 88,66 C 88,40 74,24 55,24 Z" fill="#ff7fa8" stroke="#222222" stroke-width="4"/>
   <!-- Orecchio Sinistro lungo -->
   <path d="M 36,36 C 30,18 20,2 14,3 C 8,4 12,20 22,44 Z" fill="#ff7fa8" stroke="#222222" stroke-width="4" stroke-linejoin="round"/>
   <!-- Orecchio Destro lungo (piegato dolcemente) -->

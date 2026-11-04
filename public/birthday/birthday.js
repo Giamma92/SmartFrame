@@ -83,9 +83,9 @@
       if (ratio > 1.15) {
         el.classList.add('portrait');
         if (ratio > 1.35) {
-          // Adatta larghezza e altezza dinamicamente alle proporzioni reali
-          var targetH = 54;
-          var targetW = Math.max(32, Math.min(46, targetH / ratio));
+          // Adatta larghezza e altezza dinamicamente alle proporzioni reali (ottimizzato per TV 16:9)
+          var targetH = 43;
+          var targetW = Math.max(27, Math.min(38, targetH / ratio));
           el.style.width = 'calc(var(--u) * ' + targetW.toFixed(1) + ')';
           el.style.height = 'calc(var(--u) * ' + targetH + ')';
         }
@@ -983,7 +983,12 @@
 
     var start = params.step || loadProgress().step || 'intro';
     goStep(start);
-    document.addEventListener('click', function () { startBgm(); }, { once: true });
-    document.addEventListener('keydown', function () { startBgm(); }, { once: true });
+    function onFirstInteraction() {
+      startBgm();
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+    }
+    document.addEventListener('click', onFirstInteraction);
+    document.addEventListener('keydown', onFirstInteraction);
   });
 })();

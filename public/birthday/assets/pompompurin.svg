@@ -1,14 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 95" width="110" height="95">
-  <defs>
-    <filter id="shadow-p" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
-    </filter>
-  </defs>
   <!-- Orecchie marroni scure morbide -->
   <path d="M 28,40 C 22,46 16,56 18,66 C 20,72 28,70 32,62 C 36,54 35,46 32,40 Z" fill="#996633" stroke="#222222" stroke-width="3.5" stroke-linejoin="round"/>
   <path d="M 82,40 C 88,46 94,56 92,66 C 90,72 82,70 78,62 C 74,54 75,46 78,40 Z" fill="#996633" stroke="#222222" stroke-width="3.5" stroke-linejoin="round"/>
   <!-- Corpo/Faccia Giallo Crema -->
-  <ellipse cx="55" cy="54" rx="36" ry="29" fill="#ffea75" stroke="#222222" stroke-width="4" filter="url(#shadow-p)"/>
+  <ellipse cx="55" cy="54" rx="36" ry="29" fill="#ffea75" stroke="#222222" stroke-width="4"/>
   <!-- Basco Marrone Cioccolato -->
   <ellipse cx="55" cy="27" rx="19" ry="8.5" fill="#663311" stroke="#222222" stroke-width="3.5"/>
   <circle cx="55" cy="18" r="3" fill="#663311"/>
