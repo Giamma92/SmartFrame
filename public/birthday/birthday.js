@@ -56,7 +56,15 @@
   /** Imposta una foto come sfondo; se non esiste mostra l'emoji di riserva. */
   function setPhoto(el, file, emoji, pos) {
     el.style.backgroundImage = '';
-    el.style.backgroundPosition = pos || 'center center';
+    var bgPos = 'center center';
+    if (typeof pos === 'string' && pos.indexOf('%') !== -1) {
+      bgPos = pos;
+    } else if (pos === 'top') {
+      bgPos = 'center top';
+    } else if (pos === 'bottom') {
+      bgPos = 'center bottom';
+    }
+    el.style.backgroundPosition = bgPos;
     el.classList.remove('portrait');
     el.textContent = emoji || '💖';
     if (!file) return;

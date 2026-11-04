@@ -342,6 +342,117 @@
       align-items: start;
     }
 
+    /* Modal Ritaglio / Inquadratura */
+    .crop-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 5, 18, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .crop-modal-box {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .crop-preview-wrap {
+      width: 260px;
+      height: 220px;
+      border-radius: 14px;
+      background: #000;
+      overflow: hidden;
+      position: relative;
+      border: 3px solid #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      cursor: crosshair;
+      touch-action: none;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .crop-crosshair {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--pink), 0 0 10px rgba(0,0,0,0.8);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .crop-crosshair::after {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: var(--pink);
+      border-radius: 50%;
+    }
+    .crop-presets {
+      display: flex;
+      gap: 8px;
+      margin: 14px 0 10px;
+      width: 100%;
+    }
+    .crop-preset-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: 10px;
+      background: var(--input);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .crop-preset-btn.active {
+      border-color: var(--pink);
+      background: rgba(255, 95, 162, 0.22);
+      color: #fff;
+    }
+    .btn-edit-crop {
+      background: rgba(255, 95, 162, 0.16);
+      border: 1px solid var(--pink);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .quiz-thumb {
+      cursor: pointer;
+      position: relative;
+    }
+    .quiz-thumb::after {
+      content: '✏️';
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 6px;
+      font-size: 0.7rem;
+      padding: 1px 3px;
+    }
+
     /* Barra Salva in basso */
     .savebar {
       position: fixed;
@@ -593,6 +704,28 @@
     <button type="button" class="btn save" id="btn-save">💾 Salva Configurazione</button>
   </div>
 
+  <!-- MODAL RITAGLIO / INQUADRATURA -->
+  <div id="crop-modal" class="crop-modal-overlay" hidden>
+    <div class="crop-modal-box">
+      <h3 style="margin:0 0 6px; color:var(--yellow); font-size:1.1rem;">🎯 Regola Inquadratura Polaroid</h3>
+      <p style="margin:0 0 14px; font-size:0.82rem; color:var(--muted); text-align:center;">
+        Tocca o trascina sulla foto per posizionare il punto focale (es. sul viso).
+      </p>
+      <div id="crop-preview-box" class="crop-preview-wrap">
+        <div id="crop-crosshair" class="crop-crosshair"></div>
+      </div>
+      <div class="crop-presets">
+        <button type="button" class="crop-preset-btn" data-preset="50% 15%">🔝 Viso in alto</button>
+        <button type="button" class="crop-preset-btn" data-preset="50% 50%">🎯 Centro</button>
+        <button type="button" class="crop-preset-btn" data-preset="50% 85%">🔻 In basso</button>
+      </div>
+      <div style="display:flex; gap:10px; width:100%; margin-top:8px;">
+        <button type="button" class="btn secondary" id="btn-crop-cancel" style="flex:1;">Annulla</button>
+        <button type="button" class="btn" id="btn-crop-apply" style="flex:1;">Applica ✓</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast">✅ Configurazione salvata!</div>
 
   <script>
@@ -700,13 +833,16 @@
               '</div>';
           }
 
-          var crop = q.crop || 'center';
+          var cropVal = q.crop || '50% 50%';
+          if (cropVal === 'top') cropVal = '50% 15%';
+          if (cropVal === 'center') cropVal = '50% 50%';
+          if (cropVal === 'bottom') cropVal = '50% 85%';
+
           var cropHtml =
             '<div class="crop-row">' +
-              '<span>Inquadratura foto:</span>' +
-              '<label class="crop-btn ' + (crop === 'top' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="top" ' + (crop === 'top' ? 'checked' : '') + '> In alto (Viso/Testa)</label>' +
-              '<label class="crop-btn ' + (crop === 'center' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="center" ' + (crop === 'center' ? 'checked' : '') + '> Al centro</label>' +
-              '<label class="crop-btn ' + (crop === 'bottom' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="bottom" ' + (crop === 'bottom' ? 'checked' : '') + '> In basso</label>' +
+              '<span>Inquadratura Polaroid:</span>' +
+              '<button type="button" class="btn-edit-crop" data-crop-edit="' + qi + '">✂️ Regola inquadratura foto</button>' +
+              '<input type="hidden" class="q-crop-val" data-qi="' + qi + '" value="' + escapeAttr(cropVal) + '">' +
             '</div>';
 
           box.innerHTML =
@@ -741,6 +877,21 @@
             renderQuestions();
             renderAlbumGrid();
           };
+        }
+
+        // Eventi apri editor inquadratura
+        var cropBtns = list.querySelectorAll('[data-crop-edit]');
+        for (var i = 0; i < cropBtns.length; i++) {
+          cropBtns[i].onclick = function () {
+            var qi = Number(this.getAttribute('data-crop-edit'));
+            openCropModal(qi);
+          };
+        }
+        var thumbs = list.querySelectorAll('.quiz-thumb');
+        for (var i = 0; i < thumbs.length; i++) {
+          thumbs[i].onclick = (function(qi) {
+            return function() { openCropModal(qi); };
+          })(i);
         }
 
         renderAlbumGrid();
@@ -791,6 +942,96 @@
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
       }
+
+      // Editor Ritaglio Interattivo
+      var activeCropQi = null;
+      var curCropX = 50;
+      var curCropY = 50;
+
+      function openCropModal(qi) {
+        activeCropQi = qi;
+        var p = albumPhotos[qi];
+        var imgUrl = p ? p.url : '';
+        if (!imgUrl) {
+          showToast('Nessuna foto associata a questa domanda. Carica prima l\'album!', true);
+          return;
+        }
+        var hiddenInput = document.querySelector('.q-crop-val[data-qi="' + qi + '"]');
+        var val = hiddenInput ? hiddenInput.value : '50% 50%';
+        var parts = val.replace(/%/g, '').split(' ');
+        curCropX = parseFloat(parts[0]) || 50;
+        curCropY = parseFloat(parts[1]) || 50;
+
+        var box = $('crop-preview-box');
+        box.style.backgroundImage = 'url("' + imgUrl + '")';
+        updateCropCrosshair();
+        $('crop-modal').hidden = false;
+      }
+
+      function updateCropCrosshair() {
+        var box = $('crop-preview-box');
+        box.style.backgroundPosition = curCropX + '% ' + curCropY + '%';
+        var ch = $('crop-crosshair');
+        ch.style.left = curCropX + '%';
+        ch.style.top = curCropY + '%';
+
+        var presets = document.querySelectorAll('.crop-preset-btn');
+        presets.forEach(function (btn) {
+          var pVal = btn.getAttribute('data-preset');
+          btn.classList.toggle('active', pVal === Math.round(curCropX) + '% ' + Math.round(curCropY) + '%');
+        });
+      }
+
+      function setCropFromCoords(e) {
+        var box = $('crop-preview-box');
+        var r = box.getBoundingClientRect();
+        var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        var x = ((clientX - r.left) / r.width) * 100;
+        var y = ((clientY - r.top) / r.height) * 100;
+        curCropX = Math.max(0, Math.min(100, Math.round(x)));
+        curCropY = Math.max(0, Math.min(100, Math.round(y)));
+        updateCropCrosshair();
+      }
+
+      var cropDragging = false;
+      var previewBox = $('crop-preview-box');
+      previewBox.addEventListener('mousedown', function (e) { cropDragging = true; setCropFromCoords(e); });
+      window.addEventListener('mousemove', function (e) { if (cropDragging) setCropFromCoords(e); });
+      window.addEventListener('mouseup', function () { cropDragging = false; });
+
+      previewBox.addEventListener('touchstart', function (e) { cropDragging = true; setCropFromCoords(e); }, { passive: true });
+      window.addEventListener('touchmove', function (e) { if (cropDragging) setCropFromCoords(e); }, { passive: true });
+      window.addEventListener('touchend', function () { cropDragging = false; });
+
+      var presetBtns = document.querySelectorAll('.crop-preset-btn');
+      presetBtns.forEach(function (btn) {
+        btn.onclick = function () {
+          var p = this.getAttribute('data-preset').replace(/%/g, '').split(' ');
+          curCropX = parseFloat(p[0]) || 50;
+          curCropY = parseFloat(p[1]) || 50;
+          updateCropCrosshair();
+        };
+      });
+
+      $('btn-crop-cancel').onclick = function () {
+        $('crop-modal').hidden = true;
+      };
+
+      $('btn-crop-apply').onclick = function () {
+        $('crop-modal').hidden = true;
+        if (activeCropQi !== null) {
+          var hiddenInput = document.querySelector('.q-crop-val[data-qi="' + activeCropQi + '"]');
+          var cropString = curCropX + '% ' + curCropY + '%';
+          if (hiddenInput) hiddenInput.value = cropString;
+          if (cfg.quiz && cfg.quiz.questions && cfg.quiz.questions[activeCropQi]) {
+            cfg.quiz.questions[activeCropQi].crop = cropString;
+          }
+          var thumb = document.querySelectorAll('.quiz-thumb')[activeCropQi];
+          if (thumb) thumb.style.backgroundPosition = cropString;
+          showToast('Inquadratura impostata al ' + curCropX + '%, ' + curCropY + '%! Ricorda di salvare in fondo.');
+        }
+      };
 
       function populateForm() {
         $('f-albumUrl').value = cfg.albumUrl || '';
@@ -877,8 +1118,8 @@
           for (var oi = 0; oi < optInputs.length; oi++) opts.push(optInputs[oi].value);
           var checkedRadio = cardEl.querySelector('input[type="radio"].opt-radio:checked');
           var ans = checkedRadio ? Number(checkedRadio.value) : 0;
-          var checkedCrop = cardEl.querySelector('.crop-row input[type="radio"]:checked');
-          var cropVal = checkedCrop ? checkedCrop.value : 'center';
+          var cropHidden = cardEl.querySelector('.q-crop-val');
+          var cropVal = cropHidden ? cropHidden.value : '50% 50%';
           newQuestions.push({
             question: qText,
             options: opts,
