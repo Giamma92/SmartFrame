@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 95" width="110" height="95">
+  <defs>
+    <filter id="shadow-c" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <!-- Orecchie lunghe flosce e morbide -->
+  <!-- Orecchio Sinistro -->
+  <path d="M 32,46 C 18,48 2,56 2,68 C 2,78 14,80 24,72 C 34,64 36,54 36,48 Z" fill="#ffffff" stroke="#222222" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Orecchio Destro -->
+  <path d="M 78,46 C 92,48 108,56 108,68 C 108,78 96,80 86,72 C 76,64 74,54 74,48 Z" fill="#ffffff" stroke="#222222" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Faccina Bianca morbidissima -->
+  <ellipse cx="55" cy="52" rx="34" ry="26" fill="#ffffff" stroke="#222222" stroke-width="4" filter="url(#shadow-c)"/>
+  <!-- Occhietti azzurri Cinnamoroll -->
+  <ellipse cx="40" cy="52" rx="4" ry="5.5" fill="#3399ff"/>
+  <ellipse cx="70" cy="52" rx="4" ry="5.5" fill="#3399ff"/>
+  <!-- Guanciotte rosa -->
+  <ellipse cx="32" cy="59" rx="6" ry="3.5" fill="#ff99bb" opacity="0.8"/>
+  <ellipse cx="78" cy="59" rx="6" ry="3.5" fill="#ff99bb" opacity="0.8"/>
+  <!-- Boccina felice -->
+  <path d="M 50,58 Q 55,64 60,58" fill="none" stroke="#222222" stroke-width="3" stroke-linecap="round"/>
+</svg>

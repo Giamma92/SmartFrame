@@ -43,7 +43,52 @@ html, body {
   position: absolute; bottom: -20vh;
   font-size: calc(var(--u) * 9);
   animation: floatUp linear infinite;
-  opacity: .85;
+  opacity: .88;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.balloon img {
+  width: calc(var(--u) * 11);
+  height: calc(var(--u) * 11);
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+}
+
+/* Decorazioni angolari carine Sanrio sui card-box */
+.card-box {
+  position: relative;
+}
+.sanrio-sticker {
+  position: absolute;
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 12);
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+  animation: float 3.5s ease-in-out infinite;
+}
+.sanrio-sticker.top-right {
+  top: calc(var(--u) * -4.5);
+  right: calc(var(--u) * -3);
+  transform: rotate(12deg);
+}
+.sanrio-sticker.bottom-left {
+  bottom: calc(var(--u) * -4);
+  left: calc(var(--u) * -3.5);
+  transform: rotate(-10deg);
+  animation-delay: -1.8s;
+}
+.sanrio-sticker.top-left {
+  top: calc(var(--u) * -4);
+  left: calc(var(--u) * -3);
+  transform: rotate(-14deg);
+}
+@media (max-width: 600px) {
+  .sanrio-sticker { width: calc(var(--u) * 14); height: calc(var(--u) * 14); }
+  .sanrio-sticker.top-right { top: -24px; right: -8px; }
+  .sanrio-sticker.bottom-left { bottom: -20px; left: -8px; }
+  .sanrio-sticker.top-left { top: -22px; left: -8px; }
 }
 @keyframes floatUp {
   0%   { transform: translate(0, 0) rotate(-6deg); }

@@ -236,12 +236,63 @@
     if (songAudio) { try { songAudio.pause(); } catch (e) {} }
   }
 
+  var bgMusicTimer = null;
+  var bgMusicStarted = false;
+
+  /** Melodia di sottofondo in stile Carillon kawaii/Sanrio (dolce, soffice e rilassante) */
+  function startBgm() {
+    if (bgMusicStarted || muted) return;
+    bgMusicStarted = true;
+    var ac = audioCtx();
+    if (!ac) return;
+
+    var C4 = 261.63, D4 = 293.66, E4 = 329.63, G4 = 392.00, A4 = 440.00;
+    var C5 = 523.25, D5 = 587.33, E5 = 659.25, G5 = 783.99, A5 = 880.00;
+
+    // Dolce melodia pentatonica carillon (Hello Kitty / Sanrio vibe)
+    var bgNotes = [
+      [C5, 0.4], [E5, 0.4], [G5, 0.6], [A5, 0.4], [G5, 0.8],
+      [E5, 0.4], [D5, 0.4], [C5, 0.6], [D5, 0.4], [E5, 0.8],
+      [A4, 0.4], [C5, 0.4], [E5, 0.6], [D5, 0.4], [C5, 0.8],
+      [D5, 0.4], [E5, 0.4], [G5, 0.4], [E5, 0.4], [D5, 0.8],
+
+      [E5, 0.4], [G5, 0.4], [A5, 0.6], [G5, 0.4], [E5, 0.8],
+      [C5, 0.4], [D5, 0.4], [E5, 0.4], [G5, 0.4], [A5, 1.0],
+      [G5, 0.4], [E5, 0.4], [D5, 0.6], [C5, 0.6], [C5, 1.2]
+    ];
+
+    function playLoop() {
+      if (muted || !bgMusicStarted || currentStep === 'card') return;
+      var t = 0.1;
+      for (var i = 0; i < bgNotes.length; i++) {
+        var freq = bgNotes[i][0];
+        var dur = bgNotes[i][1];
+        // Timbro sofficissimo carillon a volume molto basso (0.04)
+        tone(freq, t, dur * 1.5, 'sine', 0.045);
+        tone(freq * 2, t, dur * 0.8, 'triangle', 0.015);
+        t += dur;
+      }
+      bgMusicTimer = setTimeout(playLoop, Math.round((t + 2.0) * 1000));
+    }
+    playLoop();
+  }
+
+  function stopBgm() {
+    bgMusicStarted = false;
+    if (bgMusicTimer) { clearTimeout(bgMusicTimer); bgMusicTimer = null; }
+  }
+
   function toggleMute() {
     muted = !muted;
     $('mute-btn').textContent = muted ? '🔇' : '🔊';
     if (master) master.gain.value = muted ? 0 : 0.5;
     if (songAudio) songAudio.muted = muted;
-    if (muted && songTimer) { clearTimeout(songTimer); songTimer = null; }
+    if (muted) {
+      if (songTimer) { clearTimeout(songTimer); songTimer = null; }
+      stopBgm();
+    } else {
+      if (currentStep !== 'card') startBgm();
+    }
   }
 
   // ----------------------------------------------------------- Coriandoli ---
@@ -312,12 +363,30 @@
   // ------------------------------------------------------------ Palloncini ---
   (function balloons() {
     var box = $('balloons');
-    var em = ['🎈', '🎈', '🎈', '🎉', '💖', '⭐', '🎈', '🧁'];
-    for (var i = 0; i < em.length; i++) {
+    var items = [
+      { type: 'emoji', val: '🎈' },
+      { type: 'img', val: '/birthday/assets/hello-kitty.svg' },
+      { type: 'emoji', val: '💖' },
+      { type: 'img', val: '/birthday/assets/kuromi.svg' },
+      { type: 'emoji', val: '🎉' },
+      { type: 'img', val: '/birthday/assets/mymelody.svg' },
+      { type: 'emoji', val: '🎈' },
+      { type: 'img', val: '/birthday/assets/cinnamoroll.svg' },
+      { type: 'emoji', val: '⭐' },
+      { type: 'img', val: '/birthday/assets/pompompurin.svg' }
+    ];
+    for (var i = 0; i < items.length; i++) {
       var b = document.createElement('span');
       b.className = 'balloon';
-      b.textContent = em[i];
-      b.style.left = (5 + (i / em.length) * 90 + Math.random() * 5) + '%';
+      if (items[i].type === 'img') {
+        var img = document.createElement('img');
+        img.src = items[i].val;
+        img.alt = 'Sanrio';
+        b.appendChild(img);
+      } else {
+        b.textContent = items[i].val;
+      }
+      b.style.left = (4 + (i / items.length) * 92 + Math.random() * 4) + '%';
       var dur = 16 + Math.random() * 12;
       b.style.animationDuration = dur + 's';
       b.style.animationDelay = -(Math.random() * dur) + 's';
@@ -499,7 +568,7 @@
     tick();
   }
 
-  $('cd-start').onclick = function () { audioCtx(); sfx('win'); goStep('intro'); };
+  $('cd-start').onclick = function () { audioCtx(); startBgm(); sfx('win'); goStep('intro'); };
 
   // -------------------------------------------------------------- Intro ---
   function initIntro() {
@@ -510,7 +579,7 @@
     show('s-intro');
     setTimeout(function () { confetti(140); }, 400);
   }
-  $('intro-btn').onclick = function () { audioCtx(); sfx('pop'); nextStep(); };
+  $('intro-btn').onclick = function () { audioCtx(); startBgm(); sfx('pop'); nextStep(); };
 
   // --------------------------------------------------------------- Quiz ---
   var qi = 0;
@@ -816,6 +885,7 @@
   $('envelope').onclick = function () {
     var env = $('envelope');
     if (env.classList.contains('open')) return;
+    stopBgm();
     env.classList.add('open');
     sfx('pop');
     playSong();
@@ -913,5 +983,7 @@
 
     var start = params.step || loadProgress().step || 'intro';
     goStep(start);
+    document.addEventListener('click', function () { startBgm(); }, { once: true });
+    document.addEventListener('keydown', function () { startBgm(); }, { once: true });
   });
 })();
