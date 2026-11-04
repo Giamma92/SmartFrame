@@ -284,6 +284,41 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 4px 6px;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .opt-row.dragging {
+      opacity: 0.45;
+      background: rgba(255, 95, 162, 0.2);
+    }
+    .opt-handle {
+      cursor: grab;
+      color: var(--muted);
+      font-size: 1.1rem;
+      padding: 4px 2px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+    .opt-handle:active { cursor: grabbing; }
+    .opt-btn-move {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .opt-btn-move:active {
+      color: #fff;
+      border-color: var(--pink);
     }
     .opt-radio {
       appearance: none;
@@ -838,9 +873,14 @@
           for (var oi = 0; oi < 4; oi++) {
             var checked = (Number(q.answer) === oi) ? 'checked' : '';
             optsHtml +=
-              '<div class="opt-row">' +
+              '<div class="opt-row" draggable="true" data-qi="' + qi + '" data-oi="' + oi + '">' +
+                '<span class="opt-handle" title="Trascina per ordinare">⠿</span>' +
                 '<input type="radio" class="opt-radio" name="q-ans-' + qi + '" value="' + oi + '" ' + checked + ' title="Risposta corretta">' +
                 '<input type="text" class="q-opt" data-qi="' + qi + '" data-oi="' + oi + '" placeholder="Opzione ' + (oi + 1) + '" value="' + escapeAttr(opts[oi]) + '">' +
+                '<div style="display:flex; flex-direction:column; gap:2px;">' +
+                  '<button type="button" class="opt-btn-move" data-move="up" title="Sposta su">▲</button>' +
+                  '<button type="button" class="opt-btn-move" data-move="down" title="Sposta giù">▼</button>' +
+                '</div>' +
               '</div>';
           }
 
@@ -891,6 +931,37 @@
           };
         }
 
+        // Spostamento risposte tramite frecce ▲ / ▼
+        var moveBtns = list.querySelectorAll('.opt-btn-move');
+        for (var i = 0; i < moveBtns.length; i++) {
+          moveBtns[i].onclick = function () {
+            var row = this.closest('.opt-row');
+            var qi = Number(row.getAttribute('data-qi'));
+            var oi = Number(row.getAttribute('data-oi'));
+            var dir = this.getAttribute('data-move');
+            var targetOi = dir === 'up' ? oi - 1 : oi + 1;
+            if (targetOi < 0 || targetOi > 3) return;
+
+            collectFromDOM();
+            var q = cfg.quiz.questions[qi];
+            if (!q) return;
+
+            // Scambia i testi
+            var tmp = q.options[oi];
+            q.options[oi] = q.options[targetOi];
+            q.options[targetOi] = tmp;
+
+            // Aggiorna la risposta corretta se coinvolta
+            if (q.answer === oi) q.answer = targetOi;
+            else if (q.answer === targetOi) q.answer = oi;
+
+            renderQuestions();
+          };
+        }
+
+        // Drag and drop HTML5 & Touch per riordinare le opzioni
+        setupOptionsDragAndDrop(list);
+
         // Eventi apri editor inquadratura
         var cropBtns = list.querySelectorAll('[data-crop-edit]');
         for (var i = 0; i < cropBtns.length; i++) {
@@ -907,6 +978,65 @@
         }
 
         renderAlbumGrid();
+      }
+
+      function setupOptionsDragAndDrop(container) {
+        var dragSrcRow = null;
+
+        var rows = container.querySelectorAll('.opt-row');
+        rows.forEach(function (row) {
+          row.addEventListener('dragstart', function (e) {
+            dragSrcRow = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+          });
+          row.addEventListener('dragend', function () {
+            this.classList.remove('dragging');
+            rows.forEach(function (r) { r.style.borderTop = ''; r.style.borderBottom = ''; });
+          });
+          row.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (this !== dragSrcRow) {
+              this.style.borderTop = '2px solid var(--pink)';
+            }
+          });
+          row.addEventListener('dragleave', function () {
+            this.style.borderTop = '';
+            this.style.borderBottom = '';
+          });
+          row.addEventListener('drop', function (e) {
+            e.stopPropagation();
+            this.style.borderTop = '';
+            this.style.borderBottom = '';
+            if (dragSrcRow && dragSrcRow !== this) {
+              var fromQi = Number(dragSrcRow.getAttribute('data-qi'));
+              var toQi = Number(this.getAttribute('data-qi'));
+              if (fromQi !== toQi) return; // Solo all'interno della stessa domanda
+
+              var fromOi = Number(dragSrcRow.getAttribute('data-oi'));
+              var toOi = Number(this.getAttribute('data-oi'));
+
+              collectFromDOM();
+              var q = cfg.quiz.questions[fromQi];
+              if (!q) return;
+
+              var movedItem = q.options.splice(fromOi, 1)[0];
+              q.options.splice(toOi, 0, movedItem);
+
+              // Ricalcola la posizione della risposta corretta
+              if (q.answer === fromOi) {
+                q.answer = toOi;
+              } else if (fromOi < toOi && q.answer > fromOi && q.answer <= toOi) {
+                q.answer--;
+              } else if (fromOi > toOi && q.answer >= toOi && q.answer < fromOi) {
+                q.answer++;
+              }
+
+              renderQuestions();
+            }
+          });
+        });
       }
 
       function renderScratch() {
