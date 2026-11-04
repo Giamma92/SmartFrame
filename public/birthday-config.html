@@ -25,6 +25,7 @@
       --radius: 18px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
     body {
       margin: 0;
       padding: 0 0 110px;
@@ -705,7 +706,7 @@
   </div>
 
   <!-- MODAL RITAGLIO / INQUADRATURA -->
-  <div id="crop-modal" class="crop-modal-overlay" hidden>
+  <div id="crop-modal" class="crop-modal-overlay" style="display:none;">
     <div class="crop-modal-box">
       <h3 style="margin:0 0 6px; color:var(--yellow); font-size:1.1rem;">🎯 Regola Inquadratura Polaroid</h3>
       <p style="margin:0 0 14px; font-size:0.82rem; color:var(--muted); text-align:center;">
@@ -965,7 +966,7 @@
         var box = $('crop-preview-box');
         box.style.backgroundImage = 'url("' + imgUrl + '")';
         updateCropCrosshair();
-        $('crop-modal').hidden = false;
+        $('crop-modal').style.display = 'flex';
       }
 
       function updateCropCrosshair() {
@@ -1015,11 +1016,11 @@
       });
 
       $('btn-crop-cancel').onclick = function () {
-        $('crop-modal').hidden = true;
+        $('crop-modal').style.display = 'none';
       };
 
       $('btn-crop-apply').onclick = function () {
-        $('crop-modal').hidden = true;
+        $('crop-modal').style.display = 'none';
         if (activeCropQi !== null) {
           var hiddenInput = document.querySelector('.q-crop-val[data-qi="' + activeCropQi + '"]');
           var cropString = curCropX + '% ' + curCropY + '%';
