@@ -3,17 +3,18 @@
   "nickname": "Pucla",
   "fullName": "Francesca",
   "from": "Il tuo Gianmarco",
+  "age": 31,
   "birthday": "2026-11-21T00:00:00",
   "albumUrl": "",
 
   "countdown": {
-    "title": "Shhh... Pucla, qualcosa sta arrivando! 🤫",
+    "title": "Shhh... Pucla, qualcosa sta arrivando! 🎁",
     "text": "Questa sorpresa si sblocca solo per il compleanno di Francesca (21 novembre). Torna a trovarmi!",
     "readyText": "È arrivato il grande giorno, {name}! 🎉"
   },
 
   "intro": {
-    "title": "Tanti auguri, {name}! 🎂",
+    "title": "Tanti auguri per i tuoi {age} anni, {name}! 🎂",
     "text": "Buon compleanno {fullName}!\nOggi è il tuo giorno speciale e ho preparato un piccolo gioco tutto su di te.\nSupera le prove per sbloccare la sorpresa finale... pronta?",
     "button": "Iniziamo! 🚀"
   },
@@ -52,7 +53,7 @@
           "Rimanda un pochino... e poi parte in modalità TURBO facendo 100 cose insieme!"
         ],
         "answer": 3,
-        "caption": "Quando ti metti in testa una cosa non ti ferma più nessuno: un vero ciclone! 🌪️💪"
+        "caption": "Quando ti metti in testa una cosa non ti ferma più nessuno: un vero ciclone! ⚡💪"
       },
       {
         "question": "Qual è il talento indiscusso di Pucla che a casa ci fa fare sempre la scarpetta?",
@@ -63,7 +64,7 @@
           "Mangiare solo insalatine scondite"
         ],
         "answer": 1,
-        "caption": "MasterChef del mio cuore: i tuoi dolci (e le tue cenette) sono imbattibili! 👩‍🍳🎂"
+        "caption": "MasterChef del mio cuore: i tuoi dolci (e le tue cenette) sono imbattibili! 👑🎂"
       },
       {
         "question": "Mettiamo alla prova il coraggio della festeggiata: qual è la sua kryptonite segreta?",
@@ -74,10 +75,10 @@
           "I cagnolini piccoli e morbidi"
         ],
         "answer": 2,
-        "caption": "Tranquilla Pucla, oggi niente trapani... solo festeggiamenti e coccole! 🦸‍♀️❤️"
+        "caption": "Tranquilla Pucla, oggi niente trapani... solo festeggiamenti e coccole! 💖✨"
       },
       {
-        "question": "Oggi Pucla compie gli anni: qual è la verità scientifica sul suo conto?",
+        "question": "Oggi Pucla compie {age} anni: qual è la verità scientifica sul suo conto?",
         "options": [
           "Pensa sempre prima a far star bene tutti gli altri, ed è la persona più speciale del mondo!",
           "Da oggi pretenderà la pensione e sconti over-60",
@@ -92,27 +93,33 @@
   },
 
   "memory": {
-    "title": "Trova le coppie dei nostri ricordi! 🧩",
-    "text": "Gira le carte e trova le 6 coppie uguali.",
+    "title": "Trova le coppie dei nostri ricordi! 💖",
+    "text": "Gira le carte di Hello Kitty & amici e trova le 6 coppie uguali.",
     "photos": [],
-    "emoji": ["🎂", "💖", "🌹", "🍰", "🎁", "🥂"],
+    "emoji": ["🎂", "💖", "🌹", "🍰", "🎁", "🎈"],
     "winText": "Bravissima {name}! Memoria infallibile 🐘💕"
   },
 
   "scratch": {
-    "title": "Gratta e vinci per {name}! 🎟️",
-    "text": "Ogni biglietto è vincente. Gratta col dito (o premi OK col telecomando) per scoprire i tuoi premi!",
+    "title": "Gratta e vinci per {name}! 🎁",
+    "text": "Ogni biglietto è vincente. Gratta col dito (o premi OK col telecomando) per scoprire i tuoi 4 coupon!",
     "cards": [
       { "icon": "🍝", "title": "Cena romantica", "text": "Nel ristorante che scegli tu" },
-      { "icon": "💆‍♀️", "title": "Massaggio", "text": "30 minuti, senza lamentarmi" },
+      { "icon": "💆", "title": "Massaggio", "text": "30 minuti, senza lamentarmi" },
       { "icon": "🎬", "title": "Serata film", "text": "Scegli tu il film. Anche quello romantico." },
-      { "icon": "🛏️", "title": "Colazione a letto", "text": "Cornetto e cappuccino serviti" }
+      { "icon": "☕", "title": "Colazione a letto", "text": "Cornetto e cappuccino serviti" }
     ]
+  },
+
+  "cake": {
+    "title": "Buon {age}° Compleanno, {name}! 🎂",
+    "text": "Chiudi gli occhi, esprimi un desiderio speciale e soffia sulle candeline dei tuoi {age} anni!",
+    "wishText": "✨ Desiderio espresso! Che tutti i tuoi sogni si avverino, dolce {name}! 💖"
   },
 
   "card": {
     "title": "Buon compleanno, {name}!",
-    "message": "Cara {fullName}, la mia dolce {name},\ngrazie per ogni risata, ogni abbraccio e ogni giorno passato insieme.\nSei la cosa più bella che mi sia capitata.\nTi auguro un anno pieno di sogni che si avverano...\n...e io sarò lì, accanto a te, a festeggiarli tutti. ❤️",
+    "message": "Cara {fullName}, la mia dolce {name},\ngrazie per ogni risata, ogni abbraccio e ogni giorno passato insieme.\nSei la cosa più bella che mi sia capitata.\nTi auguro che questi {age} anni siano pieni di sogni che si avverano...\n...e io sarò lì, accanto a te, a festeggiarli tutti. ❤️",
     "signature": "Con tutto il mio amore,\n{from}",
     "music": ""
   },
@@ -121,7 +128,7 @@
     "title": "Manca ancora una cosa, {name}... 🎁",
     "riddle": "Il tuo regalo vero ti aspetta in un posto\ndove ogni mattina ti prepari per uscire,\nma dove di solito non guardi mai in alto...",
     "hint": "Prova a guardare sopra l'armadio della camera 😉",
-    "button": "Vado a cercarlo! 🏃‍♀️",
-    "finalText": "Corri {name}! E... tanti auguri ancora 💝"
+    "button": "Vado a cercarlo!",
+    "finalText": "Corri {name}! E... tanti auguri per i tuoi {age} anni! 💝"
   }
 }

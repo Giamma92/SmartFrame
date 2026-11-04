@@ -291,6 +291,10 @@ app.get(['/birthday-config', '/birthday/config', '/birthday/config/'], (_req, re
   res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'config.html'));
 });
 
+app.get(['/birthday/coupons', '/birthday/coupons/'], (_req, res) => {
+  res.sendFile(path.join(ROOT_DIR, 'public', 'birthday', 'coupons.html'));
+});
+
 app.get('/api/birthday/album-preview', async (req, res) => {
   const url = String(req.query.url || '').trim();
   if (!url) return res.json({ ok: true, title: '', photos: [] });
@@ -362,6 +366,23 @@ app.get('/api/birthday', async (req, res) => {
           if (memPhotos.length > 0) {
             json.memory.photos = memPhotos;
           }
+        }
+      }
+
+      const host = req.headers.host || `localhost:${config.server.port || 3000}`;
+      const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+      const couponsUrl = `${proto}://${host}/birthday/coupons`;
+      json.couponsUrl = couponsUrl;
+      if (QRCode) {
+        try {
+          json.couponsQrSvg = await QRCode.toString(couponsUrl, {
+            type: 'svg',
+            margin: 1,
+            width: 180,
+            color: { dark: '#3b1f4a', light: '#ffffff' }
+          });
+        } catch (qrErr) {
+          console.warn('[birthday] errore generazione QR coupon:', qrErr.message);
         }
       }
 

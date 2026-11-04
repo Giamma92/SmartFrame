@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#ff5fa2">
   <meta name="robots" content="noindex">
-  <title>🎂 Una sorpresa per te</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+  <title>Una sorpresa per te</title>
+  <link rel="icon" href="/birthday/assets/hello-kitty.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="/birthday/birthday.css?v=3">
+  <link rel="stylesheet" href="/birthday/birthday.css?v=4">
 </head>
 <body>
   <!-- Sfondo animato -->
@@ -20,13 +20,13 @@
   <!-- Barra superiore: progresso + audio -->
   <header class="topbar" id="topbar" hidden>
     <div class="progress" id="progress"></div>
-    <button class="icon-btn" id="mute-btn" data-nav aria-label="Audio">🔊</button>
+    <button class="icon-btn" id="mute-btn" data-nav aria-label="Audio"></button>
   </header>
 
   <main id="app">
     <!-- 0. Caricamento -->
     <section class="screen active" id="s-loading">
-      <div class="big-emoji bounce">🎁</div>
+      <div class="hero-svg bounce" id="loading-icon"></div>
     </section>
 
     <!-- 1. Countdown -->
@@ -34,7 +34,7 @@
       <div class="card-box">
         <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-right" alt="Hello Kitty">
         <img src="/birthday/assets/kuromi.svg" class="sanrio-sticker bottom-left" alt="Kuromi">
-        <div class="big-emoji wiggle">🎁</div>
+        <div class="hero-svg wiggle" id="cd-hero-icon"></div>
         <h1 id="cd-title"></h1>
         <div class="countdown" id="cd-timer">
           <div><b id="cd-d">0</b><span>giorni</span></div>
@@ -43,7 +43,7 @@
           <div><b id="cd-s">0</b><span>secondi</span></div>
         </div>
         <p id="cd-text"></p>
-        <button class="btn" id="cd-start" data-nav hidden>Apri la sorpresa 🎉</button>
+        <button class="btn" id="cd-start" data-nav hidden></button>
       </div>
     </section>
 
@@ -52,17 +52,20 @@
       <div class="card-box">
         <img src="/birthday/assets/mymelody.svg" class="sanrio-sticker top-left" alt="My Melody">
         <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-right" alt="Hello Kitty">
-        <div class="big-emoji cake">🎂</div>
+        <div class="hero-svg cake" id="intro-hero-icon"></div>
         <h1 id="intro-title"></h1>
         <p id="intro-text" class="pre"></p>
         <button class="btn" id="intro-btn" data-nav></button>
       </div>
     </section>
 
-    <!-- 3. Quiz -->
+    <!-- 3. Quiz (con fumetto parlante Sanrio) -->
     <section class="screen" id="s-quiz">
       <div class="card-box wide">
-        <img src="/birthday/assets/kuromi.svg" class="sanrio-sticker top-right" alt="Kuromi">
+        <div class="mascot-talk" id="quiz-mascot-wrap">
+          <div class="mascot-bubble" id="quiz-mascot-bubble">Pronta Pucla?</div>
+          <img src="/birthday/assets/kuromi.svg" class="mascot-avatar" id="quiz-mascot-img" alt="Sanrio">
+        </div>
         <h2 id="quiz-title"></h2>
         <div class="quiz-counter" id="quiz-counter"></div>
         <div id="quiz-question-wrap">
@@ -75,22 +78,22 @@
             <div class="polaroid-tape" aria-hidden="true"></div>
             <div class="photo-frame">
               <div class="photo" id="quiz-photo"></div>
-              <span class="polaroid-bow" aria-hidden="true">🎀</span>
+              <span class="polaroid-bow" id="quiz-polaroid-bow" aria-hidden="true"></span>
             </div>
             <div class="caption-wrap">
               <div class="caption" id="quiz-caption"></div>
               <div class="polaroid-footer">
-                <span class="polaroid-tag" id="quiz-polaroid-tag">♡ Ricordo #1</span>
-                <span class="polaroid-hearts" aria-hidden="true">✦ 💖 ✦</span>
+                <span class="polaroid-tag" id="quiz-polaroid-tag"></span>
+                <span class="polaroid-hearts" id="quiz-polaroid-hearts" aria-hidden="true"></span>
               </div>
             </div>
           </div>
-          <button class="btn" id="quiz-next" data-nav>Avanti ➜</button>
+          <button class="btn" id="quiz-next" data-nav></button>
         </div>
       </div>
     </section>
 
-    <!-- 4. Memory -->
+    <!-- 4. Memory (con dorso carte Sanrio) -->
     <section class="screen" id="s-memory">
       <div class="card-box wide">
         <img src="/birthday/assets/cinnamoroll.svg" class="sanrio-sticker top-right" alt="Cinnamoroll">
@@ -100,61 +103,149 @@
         <div class="memory-grid" id="mem-grid"></div>
         <div class="mem-done" id="mem-done" hidden>
           <p id="mem-win" class="win"></p>
-          <button class="btn" id="mem-next" data-nav>Avanti ➜</button>
+          <button class="btn" id="mem-next" data-nav></button>
         </div>
       </div>
     </section>
 
-    <!-- 5. Gratta e vinci -->
+    <!-- 5. Gratta e vinci + Portafoglio Coupon QR -->
     <section class="screen" id="s-scratch">
       <div class="card-box wide">
         <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-right" alt="Hello Kitty">
         <h2 id="sc-title"></h2>
         <p id="sc-text" class="small"></p>
         <div class="scratch-grid" id="sc-grid"></div>
-        <button class="btn" id="sc-next" data-nav hidden>Avanti ➜</button>
+        <div class="row" id="sc-actions" hidden>
+          <button class="btn secondary" id="sc-wallet-btn" data-nav></button>
+          <button class="btn" id="sc-next" data-nav></button>
+        </div>
       </div>
     </section>
 
-    <!-- 6. Biglietto -->
+    <!-- 6. Torta dei 31 Anni (Soffia sulle candeline) -->
+    <section class="screen" id="s-cake">
+      <div class="card-box">
+        <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-left" alt="Hello Kitty">
+        <img src="/birthday/assets/mymelody.svg" class="sanrio-sticker top-right" alt="My Melody">
+        <h2 id="cake-title"></h2>
+        <p id="cake-text" class="small"></p>
+        <div class="cake-stage" id="cake-stage" data-nav tabindex="0" role="button" aria-label="Soffia sulle candeline">
+          <div id="cake-svg-holder" class="cake-svg-holder"></div>
+          <div id="cake-smoke" class="cake-smoke" hidden></div>
+        </div>
+        <p id="cake-wish" class="win" hidden></p>
+        <div class="row">
+          <button class="btn secondary" id="cake-blow-btn" data-nav></button>
+          <button class="btn" id="cake-next" data-nav hidden></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Biglietto -->
     <section class="screen" id="s-card">
       <div class="envelope-wrap" id="env-wrap">
         <div class="envelope" id="envelope" data-nav tabindex="0">
           <div class="env-back"></div>
-          <div class="letter"><span>💖</span><span class="hand">Per te</span></div>
+          <div class="letter"><span id="env-letter-ico"></span><span class="hand">Per te</span></div>
           <div class="env-front"></div>
           <div class="env-flap"></div>
-          <div class="env-seal">💌</div>
+          <div class="env-seal" id="env-seal-ico"></div>
         </div>
-        <p class="hint" id="env-hint">Premi per aprire la busta</p>
+        <p class="hint" id="env-hint">Premi OK per aprire la busta</p>
       </div>
       <div class="card-box paper" id="letter-full" hidden>
+        <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-right" alt="Hello Kitty">
         <h1 id="card-title" class="hand"></h1>
         <p id="card-message" class="hand pre message"></p>
         <p id="card-signature" class="hand pre signature"></p>
-        <button class="btn" id="card-next" data-nav hidden>C'è ancora una sorpresa... ➜</button>
+        <button class="btn" id="card-next" data-nav hidden></button>
       </div>
     </section>
 
-    <!-- 7. Indizio finale -->
+    <!-- 8. Indizio finale + accesso a Bacheca Ricordi e Coupon -->
     <section class="screen" id="s-clue">
-      <div class="card-box">
+      <div class="card-box wide">
         <img src="/birthday/assets/mymelody.svg" class="sanrio-sticker top-right" alt="My Melody">
         <img src="/birthday/assets/kuromi.svg" class="sanrio-sticker bottom-left" alt="Kuromi">
-        <div class="big-emoji wiggle">🗝️</div>
+        <div class="hero-svg wiggle" id="clue-hero-icon"></div>
         <h1 id="clue-title"></h1>
         <p id="clue-riddle" class="riddle pre"></p>
         <p id="clue-hint" class="hint-box" hidden></p>
-        <div class="row">
-          <button class="btn secondary" id="clue-hint-btn" data-nav>Aiutino 💡</button>
+        <div class="row" id="clue-main-row">
+          <button class="btn secondary" id="clue-hint-btn" data-nav></button>
           <button class="btn" id="clue-btn" data-nav></button>
         </div>
         <p id="clue-final" class="win" hidden></p>
-        <button class="btn link" id="replay-btn" data-nav hidden>Rigioca dall'inizio ↺</button>
+        <div class="row" id="clue-extras-row" hidden>
+          <button class="btn" id="open-gallery-btn" data-nav></button>
+          <button class="btn secondary" id="open-coupons-btn" data-nav></button>
+          <button class="btn link" id="replay-btn" data-nav></button>
+        </div>
       </div>
     </section>
+
+    <!-- 9. Bacheca dei Ricordi (Galleria Polaroid a fine gioco) -->
+    <section class="screen" id="s-gallery">
+      <div class="card-box wide gallery-box">
+        <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-left" alt="Hello Kitty">
+        <img src="/birthday/assets/cinnamoroll.svg" class="sanrio-sticker top-right" alt="Cinnamoroll">
+        <div class="gallery-lights" aria-hidden="true">
+          <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          <span class="bulb"></span>
+        </div>
+        <h2 id="gal-title">La Bacheca dei Ricordi di Pucla</h2>
+        <p class="small" id="gal-sub">Seleziona una Polaroid col telecomando e premi OK per ingrandirla!</p>
+        <div class="gallery-wall" id="gal-wall"></div>
+        <div class="row">
+          <button class="btn secondary" id="gal-back-btn" data-nav></button>
+        </div>
+      </div>
+
+      <!-- Zoom Polaroid a schermo intero nella Bacheca -->
+      <div class="modal-overlay" id="gal-zoom-modal" hidden>
+        <div class="modal-card zoom-card">
+          <div class="polaroid" id="gal-zoom-polaroid">
+            <div class="polaroid-tape" aria-hidden="true"></div>
+            <div class="photo-frame">
+              <div class="photo" id="gal-zoom-photo"></div>
+              <span class="polaroid-bow" id="gal-zoom-bow" aria-hidden="true"></span>
+            </div>
+            <div class="caption-wrap">
+              <div class="caption" id="gal-zoom-caption"></div>
+              <div class="polaroid-footer">
+                <span class="polaroid-tag" id="gal-zoom-tag"></span>
+                <span class="polaroid-hearts" id="gal-zoom-hearts" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row zoom-controls">
+            <button class="btn secondary" id="gal-prev-btn" data-nav></button>
+            <button class="btn" id="gal-close-btn" data-nav></button>
+            <button class="btn secondary" id="gal-next-btn" data-nav></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modale Portafoglio Coupon & QR Code per Smartphone -->
+    <div class="modal-overlay" id="coupons-modal" hidden>
+      <div class="modal-card coupons-modal-card">
+        <img src="/birthday/assets/hello-kitty.svg" class="sanrio-sticker top-right" alt="Hello Kitty">
+        <h2>I Coupon Regalo di Pucla</h2>
+        <p class="small">Inquadra il QR Code col tuo telefono per salvarli e riscattarli quando vuoi!</p>
+        <div class="coupons-modal-body">
+          <div class="coupons-mini-list" id="coupons-mini-list"></div>
+          <div class="coupons-qr-box" id="coupons-qr-box">
+            <div class="qr-svg-wrap" id="coupons-qr-svg"></div>
+            <div class="qr-url" id="coupons-qr-url"></div>
+          </div>
+        </div>
+        <button class="btn" id="coupons-close-btn" data-nav></button>
+      </div>
+    </div>
   </main>
 
-  <script src="/birthday/birthday.js?v=3"></script>
+  <script src="/birthday/birthday.js?v=4"></script>
 </body>
 </html>
