@@ -144,6 +144,9 @@ body.kb .focused {
   box-shadow: 0 0 0 6px #fff, 0 0 0 12px var(--yellow), 0 12px 30px rgba(0,0,0,.35) !important;
   z-index: 5;
 }
+.btn.focused {
+  margin-bottom: calc(var(--u) * 1.5);
+}
 
 /* ------------------------------------------------------- Countdown --- */
 .countdown { display: flex; justify-content: center; gap: calc(var(--u) * 2); margin: calc(var(--u) * 3) 0; }
@@ -191,8 +194,13 @@ body.kb .focused {
   background: linear-gradient(135deg, var(--yellow), var(--pink)) center / cover no-repeat;
   display: flex; align-items: center; justify-content: center;
   font-size: calc(var(--u) * 14);
+  background-position: center center;
+}
+.photo.portrait {
+  width: calc(var(--u) * 48); height: calc(var(--u) * 56);
 }
 .caption { font-family: 'Caveat', cursive; font-size: calc(var(--u) * 4.4); padding: calc(var(--u) * 1.4) calc(var(--u) * 1) calc(var(--u) * 2); max-width: calc(var(--u) * 62); }
+.photo.portrait + .caption { max-width: calc(var(--u) * 48); }
 .pop-in { animation: popIn .7s cubic-bezier(.2, 1.6, .4, 1) both; }
 
 /* ---------------------------------------------------------- Memory --- */

@@ -306,6 +306,35 @@
     }
     .opt-radio:checked::after { content: '✓'; font-weight: 700; }
 
+    .crop-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .crop-row span { margin-right: 4px; font-weight: 600; }
+    .crop-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--input);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .crop-btn:has(input:checked) {
+      border-color: var(--pink);
+      background: rgba(255, 95, 162, 0.18);
+      color: #fff;
+      font-weight: 600;
+    }
+    .crop-btn input { display: none; }
+
     .scratch-row {
       display: grid;
       grid-template-columns: 68px 1fr;
@@ -671,6 +700,15 @@
               '</div>';
           }
 
+          var crop = q.crop || 'center';
+          var cropHtml =
+            '<div class="crop-row">' +
+              '<span>Inquadratura foto:</span>' +
+              '<label class="crop-btn ' + (crop === 'top' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="top" ' + (crop === 'top' ? 'checked' : '') + '> In alto (Viso/Testa)</label>' +
+              '<label class="crop-btn ' + (crop === 'center' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="center" ' + (crop === 'center' ? 'checked' : '') + '> Al centro</label>' +
+              '<label class="crop-btn ' + (crop === 'bottom' ? 'active' : '') + '"><input type="radio" name="q-crop-' + qi + '" value="bottom" ' + (crop === 'bottom' ? 'checked' : '') + '> In basso</label>' +
+            '</div>';
+
           box.innerHTML =
             '<div class="subcard-head">' +
               '<span>Domanda #' + (qi + 1) + ' (Foto #' + (qi + 1) + ')</span>' +
@@ -684,7 +722,8 @@
               '</label>' +
             '</div>' +
             '<div class="options-list">' + optsHtml + '</div>' +
-            '<label class="field">' +
+            cropHtml +
+            '<label class="field" style="margin-top:10px;">' +
               'Dedica sotto la foto Polaroid quando indovina' +
               '<input type="text" class="q-caption" data-qi="' + qi + '" placeholder="Es. Che bel ricordo ❤️" value="' + escapeAttr(q.caption || '') + '">' +
             '</label>';
@@ -836,13 +875,16 @@
           var optInputs = cardEl.querySelectorAll('.q-opt');
           var opts = [];
           for (var oi = 0; oi < optInputs.length; oi++) opts.push(optInputs[oi].value);
-          var checkedRadio = cardEl.querySelector('input[type="radio"]:checked');
+          var checkedRadio = cardEl.querySelector('input[type="radio"].opt-radio:checked');
           var ans = checkedRadio ? Number(checkedRadio.value) : 0;
+          var checkedCrop = cardEl.querySelector('.crop-row input[type="radio"]:checked');
+          var cropVal = checkedCrop ? checkedCrop.value : 'center';
           newQuestions.push({
             question: qText,
             options: opts,
             answer: ans,
-            caption: qCap
+            caption: qCap,
+            crop: cropVal
           });
         }
         cfg.quiz.questions = newQuestions;
