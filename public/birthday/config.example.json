@@ -24,34 +24,34 @@
       {
         "question": "Qual è il classico rituale della buonanotte di Francesca?",
         "options": [
-          "Meditazione zen e tisana rilassante",
           "Crollare addormentata alle 21:30 col telefono acceso in mano",
+          "Meditazione zen e tisana rilassante",
           "Maratona di 3 film d'azione fino alle 3 di notte",
           "Mettere il telefono in modalità aereo e riporlo nel cassetto"
         ],
-        "answer": 1,
+        "answer": 0,
         "caption": "La bella addormentata più dolce del mondo (e io che faccio da custode dello schermo!) 📱💤"
       },
       {
         "question": "Cosa spinge veramente Francesca a saltare giù dal letto la mattina puntualissima?",
         "options": [
           "La voglia irrefrenabile di fare jogging all'alba",
-          "La paura cosmica di non trovare parcheggio!",
           "Il profumo del caffè appena fatto",
+          "La paura cosmica di non trovare parcheggio!",
           "La passione segreta per il traffico delle 7:30"
         ],
-        "answer": 1,
+        "answer": 2,
         "caption": "Pilota provetta sempre a caccia del parcheggio perfetto! 🚗💨"
       },
       {
         "question": "Come affronta Francesca la 'to-do list' delle cose da fare?",
         "options": [
           "Pianifica tutto con 6 mesi di anticipo",
-          "Rimanda un pochino... e poi parte in modalità TURBO facendo 100 cose insieme!",
           "Delega tutto a qualcun altro",
-          "Fa una cosa sola al giorno, con calma olimpica"
+          "Fa una cosa sola al giorno, con calma olimpica",
+          "Rimanda un pochino... e poi parte in modalità TURBO facendo 100 cose insieme!"
         ],
-        "answer": 1,
+        "answer": 3,
         "caption": "Quando ti metti in testa una cosa non ti ferma più nessuno: un vero ciclone! 🌪️💪"
       },
       {

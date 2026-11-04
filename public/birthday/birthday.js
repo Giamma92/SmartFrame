@@ -79,8 +79,19 @@
     var img = new Image();
     img.onload = function () {
       el.style.backgroundImage = 'url("' + src + '")';
-      if (img.naturalHeight > img.naturalWidth * 1.15) {
+      var ratio = img.naturalHeight / img.naturalWidth;
+      if (ratio > 1.15) {
         el.classList.add('portrait');
+        if (ratio > 1.35) {
+          // Adatta larghezza e altezza dinamicamente alle proporzioni reali
+          var targetH = 54;
+          var targetW = Math.max(32, Math.min(46, targetH / ratio));
+          el.style.width = 'calc(var(--u) * ' + targetW.toFixed(1) + ')';
+          el.style.height = 'calc(var(--u) * ' + targetH + ')';
+        }
+      } else {
+        el.style.width = '';
+        el.style.height = '';
       }
       el.textContent = '';
     };
